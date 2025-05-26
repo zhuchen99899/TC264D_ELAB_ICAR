@@ -202,7 +202,7 @@ void elab_run(void)
         T_delay_time = 300;
                if(gpio_get_level(SWITCH1)) T_delay_time /= 2;
                if(gpio_get_level(SWITCH2)) T_delay_time /= 2;
-               if( !gpio_get_level(KEY1) || !gpio_get_level(KEY2) || !gpio_get_level(KEY3) || !gpio_get_level(KEY4) )         // ��ȡ KEYx ��ƽΪ��
+               if( !gpio_get_level(KEY1) || !gpio_get_level(KEY2) || !gpio_get_level(KEY3) || !gpio_get_level(KEY4) )         // 锟斤拷取 KEYx 锟斤拷平为锟斤拷
                {
 
                }

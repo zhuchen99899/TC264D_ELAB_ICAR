@@ -29,7 +29,7 @@ enum elog_level_enum
 };
 
 /* public functions --------------------------------------------------------- */
-#define ELAB_TAG(_tag)                  static const char *TAG = _tag
+#define ELAB_TAG(_tag)                 static const char *TAG = _tag
 
 void elog_level_set(uint8_t level);
 

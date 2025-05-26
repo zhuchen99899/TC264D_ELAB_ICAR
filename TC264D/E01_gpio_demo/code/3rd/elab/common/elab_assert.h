@@ -13,7 +13,7 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdbool.h>
-
+#include "elab_log.h"
 /* Exported functions --------------------------------------------------------*/
 void elab_assert_func(void);
 
