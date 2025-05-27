@@ -8,12 +8,18 @@ void func_TEST(uint32_t *handle)
 INIT_EXPORT(func_TEST,EXPORT_DRVIVER);
 
 
-
+int sum;
 void test_polling(void)
 {
-    elog_error("polling");
+    // elog_debug("polling");
+    // for(int i=0;i<=100;i++)
+    // {
+    //     sum=sum+i;
+
+    // }
+    // elog_debug("sum %d",sum);
 }
-POLL_EXPORT(test_polling,1);
+POLL_EXPORT(test_polling,5);
 
 
 

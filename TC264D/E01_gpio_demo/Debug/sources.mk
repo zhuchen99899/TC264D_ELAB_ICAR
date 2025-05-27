@@ -30,6 +30,9 @@ code/3rd/elab/edf/normal \
 code/3rd/elab/edf/user \
 code/3rd/elab/elib \
 code/3rd/list \
+code/export \
+code/mcu/driver \
+code/mcu/drv_export \
 code/os \
 code/usr \
 libraries/infineon_libraries/Infra/Platform/Tricore/Compilers \

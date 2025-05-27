@@ -12,7 +12,7 @@ ELAB_TAG("EdfLed");
 
 /* private config ----------------------------------------------------------- */
 #define ELAB_LED_POLL_PEROID                    (50)         //设置周期
-#define ELAB_LED_ON_LONG_MS                     (1500)       //长亮灯时间
+#define ELAB_LED_ON_LONG_MS                     (500)       //长亮灯时间
 #define ELAB_LED_ON_SHORT_MS                    (250)        //短亮灯时间
 #define ELAB_LED_OFF_MS                         (250)        //LED关闭时间
 

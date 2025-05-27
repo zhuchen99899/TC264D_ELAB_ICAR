@@ -14,7 +14,7 @@
 #include "elab_common.h"
 #include "elab_assert.h"
 #include "elab_log.h"
-#include "zf_common_headfile.h"
+
 ELAB_TAG("eLab_Export");
 
 #if (ELAB_RTOS_CMSIS_OS_EN != 0)
@@ -42,21 +42,6 @@ extern "C" {
 #endif
 
 
-#define LED1                    (P20_9)
-#define LED2                    (P20_8)
-#define LED3                    (P21_5)
-#define LED4                    (P21_4)
-
-#define KEY1                    (P20_6)
-#define KEY2                    (P20_7)
-#define KEY3                    (P11_2)
-#define KEY4                    (P11_3)
-
-#define SWITCH1                 (P33_11)
-#define SWITCH2                 (P33_12)
-
-uint16 T_delay_time = 0;
-uint8 T_led_state = 0;
 /* private function prototype ----------------------------------------------- */
 static void module_null_init(void);
 static void _init_func_execute(int8_t level);
@@ -197,24 +182,8 @@ void elab_run(void)
     /* Start polling function in metal eLab. */
     while (1)
     {
+        elog_debug("polling");
         _poll_func_execute();
-
-        T_delay_time = 300;
-               if(gpio_get_level(SWITCH1)) T_delay_time /= 2;
-               if(gpio_get_level(SWITCH2)) T_delay_time /= 2;
-               if( !gpio_get_level(KEY1) || !gpio_get_level(KEY2) || !gpio_get_level(KEY3) || !gpio_get_level(KEY4) )         // 锟斤拷取 KEYx 锟斤拷平为锟斤拷
-               {
-
-               }
-               else
-               {
-
-                 gpio_set_level(LED4, !T_led_state);
-               }
-               T_led_state = !T_led_state;
-
-
-               system_delay_ms(T_delay_time);
     }
 #endif
 }
