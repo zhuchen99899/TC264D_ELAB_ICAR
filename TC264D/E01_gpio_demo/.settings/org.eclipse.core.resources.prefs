@@ -2,4 +2,5 @@ eclipse.preferences.version=1
 encoding//code/3rd/elab/edf/normal/elab_pin.c=GBK
 encoding//code/os/cmsis_os2.c=UTF-8
 encoding//libraries/zf_common/zf_common_headfile.h=UTF-8
+encoding//user/cpu0_main.c=UTF-8
 encoding/<project>=GBK

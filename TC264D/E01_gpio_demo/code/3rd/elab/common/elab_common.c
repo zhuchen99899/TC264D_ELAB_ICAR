@@ -19,7 +19,7 @@ uint32_t elab_version(void)
 
 uint32_t elab_time_ms(void)
 {
-    return (uint32_t)system_getval_ms();
+    return (uint32_t)get_TC264D_ms();
 }
 
 

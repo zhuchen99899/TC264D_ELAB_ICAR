@@ -11,8 +11,8 @@ static void led_export(void)
 
     elab_led_register(&led1, "led1", "led1_pin",true);
     elab_assert(&led1 != NULL);
-	 elab_led_toggle(&led1.super,500);
-    //elab_led_set_value(&led1.super,2);
+	 //elab_led_toggle(&led1.super,500);
+    elab_led_set_value(&led1.super,2);
 }
 
-//INIT_EXPORT(led_export, EXPORT_DEVICE);
+INIT_EXPORT(led_export, EXPORT_DEVICE);

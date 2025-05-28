@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "bsp_pit.h": "c",
+        "zf_driver_pwm.h": "c",
+        "zf_driver_pit.h": "c",
+        "zf_common_typedef.h": "c",
+        "bsp_init.h": "c",
+        "isr_config.h": "c"
+    }
+}

@@ -11,6 +11,6 @@ static void driver_pin_mcu_export(void)
     elab_pin_set_mode(&pin_led1.device.super, PIN_MODE_OUTPUT_PP);
 }
 
-//INIT_EXPORT(driver_pin_mcu_export, EXPORT_DRVIVER);
+INIT_EXPORT(driver_pin_mcu_export, EXPORT_DRVIVER);
 
 

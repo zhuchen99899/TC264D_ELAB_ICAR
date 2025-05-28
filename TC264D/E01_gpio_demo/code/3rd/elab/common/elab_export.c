@@ -182,7 +182,6 @@ void elab_run(void)
     /* Start polling function in metal eLab. */
     while (1)
     {
-        elog_debug("polling");
         _poll_func_execute();
     }
 #endif

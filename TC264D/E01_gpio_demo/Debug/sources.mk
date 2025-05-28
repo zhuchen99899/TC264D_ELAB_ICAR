@@ -31,6 +31,7 @@ code/3rd/elab/edf/user \
 code/3rd/elab/elib \
 code/3rd/list \
 code/export \
+code/mcu/bsp \
 code/mcu/driver \
 code/mcu/drv_export \
 code/os \
