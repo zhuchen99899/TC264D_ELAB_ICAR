@@ -14,7 +14,7 @@
   * @param  capacity    Queue's capacity.
   * @retval None
   */
-void elib_queue_init(elib_queue_t * const me, void *buffer, uint16_t capacity)
+void elib_queue_init(elib_queue_t * const me, void *buffer, uint32_t capacity)
 {
     me->buffer = (uint8_t *)buffer;
     me->capacity = capacity;
@@ -30,7 +30,7 @@ void elib_queue_init(elib_queue_t * const me, void *buffer, uint16_t capacity)
   * @param  size    data's size.
   * @retval if > 0, the data size; if < 0, error id.
   */
-int32_t elib_queue_push(elib_queue_t * const me, void *buffer, uint16_t size)
+int32_t elib_queue_push(elib_queue_t * const me, void *buffer, uint32_t size)
 {
     int32_t ret = (int32_t)size;
 
@@ -40,7 +40,7 @@ int32_t elib_queue_push(elib_queue_t * const me, void *buffer, uint16_t size)
     }
     else
     {
-        for (uint16_t i = 0; i < size; i ++)
+        for (uint32_t i = 0; i < size; i ++)
         {
             me->buffer[me->head] = ((uint8_t *)buffer)[i];
             me->head = (me->head + 1) % me->capacity;
@@ -58,12 +58,12 @@ int32_t elib_queue_push(elib_queue_t * const me, void *buffer, uint16_t size)
   * @param  size    data's size.
   * @retval Actual pulled data size.
   */
-uint16_t elib_queue_pull(elib_queue_t * const me, void *buffer, uint16_t size)
+uint32_t elib_queue_pull(elib_queue_t * const me, void *buffer, uint32_t size)
 {
-    uint16_t size_data = me->capacity - me->size_free;
-    uint16_t size_pull = size > size_data ? size_data : size;
+    uint32_t size_data = me->capacity - me->size_free;
+    uint32_t size_pull = size > size_data ? size_data : size;
 
-    for (uint16_t i = 0; i < size_pull; i ++)
+    for (uint32_t i = 0; i < size_pull; i ++)
     {
         ((uint8_t *)buffer)[i] = me->buffer[(me->tail + i) % me->capacity];
     }
@@ -77,10 +77,10 @@ uint16_t elib_queue_pull(elib_queue_t * const me, void *buffer, uint16_t size)
   * @param  size    data's size.
   * @retval Actual poped data size.
   */
-uint16_t elib_queue_pop(elib_queue_t * const me, uint16_t size)
+uint32_t elib_queue_pop(elib_queue_t * const me, uint32_t size)
 {
-    uint16_t size_data = me->capacity - me->size_free;
-    uint16_t size_pop = size > size_data ? size_data : size;
+    uint32_t size_data = me->capacity - me->size_free;
+    uint32_t size_pop = size > size_data ? size_data : size;
 
     me->tail = (me->tail + size_pop) % me->capacity;
     me->size_free += size_pop;
@@ -95,12 +95,12 @@ uint16_t elib_queue_pop(elib_queue_t * const me, uint16_t size)
   * @param  size    data's size.
   * @retval Actual pulled & poped data size.
   */
-uint16_t elib_queue_pull_pop(elib_queue_t * const me, void *buffer, uint16_t size)
+uint32_t elib_queue_pull_pop(elib_queue_t * const me, void *buffer, uint32_t size)
 {
-    uint16_t size_data = me->capacity - me->size_free;
-    uint16_t size_pop = size > size_data ? size_data : size;
+    uint32_t size_data = me->capacity - me->size_free;
+    uint32_t size_pop = size > size_data ? size_data : size;
 
-    for (uint16_t i = 0; i < size_pop; i ++)
+    for (uint32_t i = 0; i < size_pop; i ++)
     {
         ((uint8_t *)buffer)[i] = me->buffer[(me->tail + i) % me->capacity];
     }
@@ -127,7 +127,7 @@ void elib_queue_clear(elib_queue_t * const me)
   * @param  me          this pointer
   * @retval Free size.
   */
-uint16_t elib_queue_free_size(elib_queue_t * const me)
+uint32_t elib_queue_free_size(elib_queue_t * const me)
 {
     return me->size_free;
 }

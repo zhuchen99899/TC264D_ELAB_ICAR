@@ -12,7 +12,7 @@
 #include <string.h>
 #include "../common/elab_def.h"
 #include "../common/elab_assert.h"
-#include "../os/cmsis_os.h"
+#include "../os/cmsis_os2.h"
 
 #ifdef __cplusplus
 extern "C" {

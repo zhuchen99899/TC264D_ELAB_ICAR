@@ -5,6 +5,12 @@
         "zf_driver_pit.h": "c",
         "zf_common_typedef.h": "c",
         "bsp_init.h": "c",
-        "isr_config.h": "c"
+        "isr_config.h": "c",
+        "zf_common_headfile.h": "c",
+        "elib_queue.h": "c",
+        "elab_device.h": "c",
+        "cmsis_os.h": "c",
+        "elab_assert.h": "c",
+        "cmsis_os2.h": "c"
     }
 }

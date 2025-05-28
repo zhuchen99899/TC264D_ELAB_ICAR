@@ -16,3 +16,5 @@ cmsis_os2.o :	../code/3rd/elab/common/elab_common.h
 ../code/3rd/elab/common/elab_common.h :
 cmsis_os2.o :	../code/os/cmsis_os.h
 ../code/os/cmsis_os.h :
+cmsis_os2.o :	../code/3rd/elab/elib/elib_queue.h
+../code/3rd/elab/elib/elib_queue.h :
