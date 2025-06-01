@@ -9,11 +9,13 @@
 /* includes ----------------------------------------------------------------- */
 #include <stdint.h>
 #include <stdlib.h>
-#include <stdio.h>
+
 #include <assert.h>
 #include <stdbool.h>
 #include <stddef.h>
-
+#include <stdio.h>
+#include <string.h>
+#include "elab_utils.h"
 #ifdef __cplusplus
 extern "C" {
 #endif

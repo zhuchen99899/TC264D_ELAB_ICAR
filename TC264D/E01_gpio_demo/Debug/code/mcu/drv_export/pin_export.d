@@ -12,6 +12,8 @@ pin_export.o :	../code/3rd/elab/edf/elab_device.h
 ../code/3rd/elab/edf/elab_device.h :
 pin_export.o :	../code/3rd/elab/common/elab_def.h
 ../code/3rd/elab/common/elab_def.h :
+pin_export.o :	../code/3rd/elab/common/elab_utils.h
+../code/3rd/elab/common/elab_utils.h :
 pin_export.o :	../code/3rd/elab/common/elab_assert.h
 ../code/3rd/elab/common/elab_assert.h :
 pin_export.o :	../code/3rd/elab/common/elab_log.h

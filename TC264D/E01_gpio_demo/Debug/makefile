@@ -50,6 +50,7 @@ RM := rm -rf
 -include code/mcu/driver/subdir.mk
 -include code/mcu/bsp/subdir.mk
 -include code/export/subdir.mk
+-include code/component/subdir.mk
 -include code/3rd/list/subdir.mk
 -include code/3rd/elab/elib/subdir.mk
 -include code/3rd/elab/edf/user/subdir.mk

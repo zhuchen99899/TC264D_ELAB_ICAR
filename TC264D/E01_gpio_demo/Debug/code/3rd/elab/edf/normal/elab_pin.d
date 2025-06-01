@@ -10,6 +10,8 @@ elab_pin.o :	../code/3rd/elab/edf/elab_device.h
 ../code/3rd/elab/edf/elab_device.h :
 elab_pin.o :	../code/3rd/elab/common/elab_def.h
 ../code/3rd/elab/common/elab_def.h :
+elab_pin.o :	../code/3rd/elab/common/elab_utils.h
+../code/3rd/elab/common/elab_utils.h :
 elab_pin.o :	../code/3rd/elab/common/elab_assert.h
 ../code/3rd/elab/common/elab_assert.h :
 elab_pin.o :	../code/3rd/elab/common/elab_log.h

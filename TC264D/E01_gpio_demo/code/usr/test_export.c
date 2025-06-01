@@ -2,6 +2,7 @@
 #include "elab_log.h"
 #include "elab_device.h"
 #include "cmsis_os2.h"
+#include "../3rd/elab/edf/normal/elab_serial.h"
 ELAB_TAG("test_export");
 void func_TEST(uint32_t *handle)
 {
@@ -12,10 +13,13 @@ INIT_EXPORT(func_TEST,EXPORT_DRVIVER);
 
 
 static void test_message_queue(void);
+static void test_uart1_send(void);
+
+
 
 static void _timer_func(void *argument){
 
-    test_message_queue();
+    test_uart1_send();
 
 }
 
@@ -38,6 +42,13 @@ void init_test_timer(void)
 INIT_EXPORT(init_test_timer,EXPORT_MIDWARE);
 
 
+
+void test_uart1_send(void)
+{
+elab_device_t *uart1 = elab_device_find("uart1");
+uint8_t data[] = "Hello, UART1!";   
+elab_serial_write(uart1,data,sizeof(data));
+}
 
 // 测试用例函数
 void test_message_queue(void) {

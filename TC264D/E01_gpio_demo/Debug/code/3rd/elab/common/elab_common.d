@@ -12,3 +12,5 @@ elab_common.o :	../code/os/cmsis_os2.h
 ../code/os/cmsis_os2.h :
 elab_common.o :	../code/3rd/elab/common/elab_def.h
 ../code/3rd/elab/common/elab_def.h :
+elab_common.o :	../code/3rd/elab/common/elab_utils.h
+../code/3rd/elab/common/elab_utils.h :

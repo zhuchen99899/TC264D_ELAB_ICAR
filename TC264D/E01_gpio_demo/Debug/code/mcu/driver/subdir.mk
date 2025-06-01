@@ -4,16 +4,20 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../code/mcu/driver/drv_pin.c 
+../code/mcu/driver/drv_pin.c \
+../code/mcu/driver/drv_uart.c 
 
 OBJS += \
-./code/mcu/driver/drv_pin.o 
+./code/mcu/driver/drv_pin.o \
+./code/mcu/driver/drv_uart.o 
 
 COMPILED_SRCS += \
-./code/mcu/driver/drv_pin.src 
+./code/mcu/driver/drv_pin.src \
+./code/mcu/driver/drv_uart.src 
 
 C_DEPS += \
-./code/mcu/driver/drv_pin.d 
+./code/mcu/driver/drv_pin.d \
+./code/mcu/driver/drv_uart.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

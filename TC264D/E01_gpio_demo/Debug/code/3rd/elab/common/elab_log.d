@@ -16,5 +16,7 @@ elab_log.o :	../code/os/cmsis_os2.h
 ../code/os/cmsis_os2.h :
 elab_log.o :	../code/3rd/elab/common/elab_def.h
 ../code/3rd/elab/common/elab_def.h :
+elab_log.o :	../code/3rd/elab/common/elab_utils.h
+../code/3rd/elab/common/elab_utils.h :
 elab_log.o :	../code/3rd/elab/common/elab_config.h
 ../code/3rd/elab/common/elab_config.h :

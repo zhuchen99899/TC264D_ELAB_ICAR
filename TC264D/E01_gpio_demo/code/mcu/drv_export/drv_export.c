@@ -1,4 +1,5 @@
 #include "../driver/drv_pin.h"
+#include "../driver/drv_uart.h"
 #include "../../3rd/elab/common/elab_export.h"
 
 
@@ -14,3 +15,13 @@ static void driver_pin_mcu_export(void)
 INIT_EXPORT(driver_pin_mcu_export, EXPORT_DRVIVER);
 
 
+
+static elab_uart_driver_t uart1;  
+static void dirver_uart_export(void)
+{
+    elab_driver_uart_init(&uart1,"uart1",115200,
+                    UART1_TX_P15_0,UART1_RX_P15_1,UART_1);
+    __device_enable(&uart1.device.super,true);
+}
+
+INIT_EXPORT(dirver_uart_export, EXPORT_DRVIVER);

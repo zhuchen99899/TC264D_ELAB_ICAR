@@ -6,6 +6,8 @@ elab_export.o :	../code/3rd/elab/common/elab_export.c
 ../code/3rd/elab/common/elab_export.c :
 elab_export.o :	../code/3rd/elab/common/elab_def.h
 ../code/3rd/elab/common/elab_def.h :
+elab_export.o :	../code/3rd/elab/common/elab_utils.h
+../code/3rd/elab/common/elab_utils.h :
 elab_export.o :	../code/3rd/elab/common/elab_export.h
 ../code/3rd/elab/common/elab_export.h :
 elab_export.o :	../code/3rd/elab/common/elab_common.h

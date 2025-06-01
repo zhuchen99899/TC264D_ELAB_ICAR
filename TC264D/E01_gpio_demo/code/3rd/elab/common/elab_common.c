@@ -7,8 +7,7 @@
 
 #include "elab_common.h"
 #include "elab_def.h"
-#include "zf_driver_timer.h"
-
+#include "bsp_pit.h"
 /* public function ---------------------------------------------------------- */
 uint32_t elab_version(void)
 {

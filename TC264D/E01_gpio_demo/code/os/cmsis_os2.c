@@ -14,7 +14,7 @@ osStatus_t osKernelStart(void)      { return 0; }
 /* Mutex functions */
 osMutexId_t osMutexNew(const osMutexAttr_t *attr) {
     (void)attr;
-    return (osMutexId_t)1;  // 杩斿洖闈炵┖鎸囬拡琛ㄧず鍒涘缓鎴愬姛
+    return (osMutexId_t)1;  // 裸机情况下无锁
 }
 
 osStatus_t osMutexAcquire(osMutexId_t mutex_id, uint32_t timeout) {
@@ -227,11 +227,10 @@ osStatus_t osMessageQueuePut(osMessageQueueId_t mq_id, const void *msg_ptr, uint
         return osErrorParameter;
     }
 
-    uint32_t start_time = elab_time_ms();
     while (elib_queue_push(&mq->queue, (void *)msg_ptr, mq->msg_size) < 0) {
-        if (timeout != osWaitForever && (elab_time_ms() - start_time) >= timeout) {
-            return osErrorTimeout;
-        }
+        (void)timeout;
+        return osErrorTimeout;
+
     }
 
     return osOK;
@@ -253,11 +252,11 @@ osStatus_t osMessageQueueGet(osMessageQueueId_t mq_id, void *msg_ptr, uint8_t *m
         return osErrorParameter;
     }
 
-    uint32_t start_time = elab_time_ms();
+
     while (elib_queue_pull_pop(&mq->queue, msg_ptr, mq->msg_size) == 0) {
-        if (timeout != osWaitForever && (elab_time_ms() - start_time) >= timeout) {
-            return osErrorTimeout;
-        }
+        (void)timeout;
+        return osErrorTimeout;
+
     }
 
     return osOK;

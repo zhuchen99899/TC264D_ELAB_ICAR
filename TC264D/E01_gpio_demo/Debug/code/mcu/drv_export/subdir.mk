@@ -4,16 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../code/mcu/drv_export/pin_export.c 
+../code/mcu/drv_export/drv_export.c 
 
 OBJS += \
-./code/mcu/drv_export/pin_export.o 
+./code/mcu/drv_export/drv_export.o 
 
 COMPILED_SRCS += \
-./code/mcu/drv_export/pin_export.src 
+./code/mcu/drv_export/drv_export.src 
 
 C_DEPS += \
-./code/mcu/drv_export/pin_export.d 
+./code/mcu/drv_export/drv_export.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

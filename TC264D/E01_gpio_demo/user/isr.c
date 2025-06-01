@@ -186,19 +186,19 @@ IFX_INTERRUPT(uart0_rx_isr, 0, UART0_RX_INT_PRIO)
 
 
 // 串口1默认连接到摄像头配置串口
-IFX_INTERRUPT(uart1_tx_isr, 0, UART1_TX_INT_PRIO)
-{
-    interrupt_global_enable(0);                     // 开启中断嵌套
+// IFX_INTERRUPT(uart1_tx_isr, 0, UART1_TX_INT_PRIO)
+// {
+//     interrupt_global_enable(0);                     // 开启中断嵌套
 
 
 
 
-}
-IFX_INTERRUPT(uart1_rx_isr, 0, UART1_RX_INT_PRIO)
-{
-    interrupt_global_enable(0);                     // 开启中断嵌套
-    camera_uart_handler();                          // 摄像头参数配置统一回调函数
-}
+// }
+// IFX_INTERRUPT(uart1_rx_isr, 0, UART1_RX_INT_PRIO)
+// {
+//     interrupt_global_enable(0);                     // 开启中断嵌套
+//     camera_uart_handler();                          // 摄像头参数配置统一回调函数
+// }
 
 // 串口2默认连接到无线转串口模块
 IFX_INTERRUPT(uart2_tx_isr, 0, UART2_TX_INT_PRIO)
