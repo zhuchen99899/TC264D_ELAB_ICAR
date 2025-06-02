@@ -4,15 +4,19 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../code/usr/ringbuf_handle.c \
 ../code/usr/test_export.c 
 
 OBJS += \
+./code/usr/ringbuf_handle.o \
 ./code/usr/test_export.o 
 
 COMPILED_SRCS += \
+./code/usr/ringbuf_handle.src \
 ./code/usr/test_export.src 
 
 C_DEPS += \
+./code/usr/ringbuf_handle.d \
 ./code/usr/test_export.d 
 
 

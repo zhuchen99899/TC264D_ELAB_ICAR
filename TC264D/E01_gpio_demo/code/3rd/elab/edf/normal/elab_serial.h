@@ -9,6 +9,7 @@
 /* includes ----------------------------------------------------------------- */
 #include "../elab_device.h"
 #include "../../os/cmsis_os.h"
+#include "../../../../component/ringbuf/ringbuf.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -76,6 +77,12 @@ typedef struct elab_serial_config
     uint32_t reserved                   : 7;
 } elab_serial_config_t;
 
+
+#if ELAB_RTOS_CMSIS_OS_EN != 1
+//缓冲区回调
+typedef void (* serial_handle_ring_buffer)(ringbuf_t *ringbuf);
+#endif
+
 typedef struct elab_serail
 {
     elab_device_t super;
@@ -86,6 +93,13 @@ typedef struct elab_serail
     osMutexId_t mutex_tx;
     osSemaphoreId_t sem_tx;
     osMessageQueueId_t queue_rx;
+
+//裸机推荐使用ringbuffer，操作系统中可以删除
+#if ELAB_RTOS_CMSIS_OS_EN != 1
+    osTimerId_t timer; //定时处理循环缓冲区定时器
+    ringbuf_t rx_ringbuf; //接收缓冲区
+    serial_handle_ring_buffer cb;//缓冲区回调函数
+#endif
 
     const struct elab_serial_ops *ops;
     elab_serial_attr_t attr;
@@ -122,11 +136,16 @@ void elab_serial_set_baudrate(elab_device_t * const me, uint32_t baudrate);
 void elab_serial_set_attr(elab_device_t * const me, elab_serial_attr_t *attr);
 elab_serial_attr_t elab_serial_get_attr(elab_device_t * const me);
 
+//ringbuffer handler_register
+void elab_serial_rx_ringbuf_handler_register(elab_device_t *me, serial_handle_ring_buffer callback);
+
 /* TODO Just for half duplex mode. */
 int32_t elab_serial_xfer(elab_device_t *me,
                             void *buff_tx, uint32_t size_tx,
                             void *buff_rx, uint32_t size_rx,
                             uint32_t timeout);
+
+
 
 #ifdef __cplusplus
 }

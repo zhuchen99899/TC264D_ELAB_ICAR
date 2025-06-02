@@ -1,6 +1,6 @@
 #ifndef __RING_BUF_
 #define __RING_BUF_
-#include "../3rd/elab/common/elab_def.h"
+#include "../../3rd/elab/common/elab_def.h"
 #ifdef __cplusplus
 extern "C" {
 #endif

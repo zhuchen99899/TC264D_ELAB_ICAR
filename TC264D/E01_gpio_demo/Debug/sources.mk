@@ -30,7 +30,8 @@ code/3rd/elab/edf/normal \
 code/3rd/elab/edf/user \
 code/3rd/elab/elib \
 code/3rd/list \
-code/component \
+code/component/ringbuf \
+code/component/state_machine \
 code/export \
 code/mcu/bsp \
 code/mcu/driver \

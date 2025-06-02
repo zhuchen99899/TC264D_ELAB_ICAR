@@ -7,6 +7,7 @@
 #include "elab_serial.h"
 #include "../../common/elab_assert.h"
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -46,6 +47,18 @@ static const osMutexAttr_t _mutex_attr =
     NULL,
     0U 
 };
+#if ELAB_RTOS_CMSIS_OS_EN != 1
+ //os 定时器
+static const osTimerAttr_t timer_attr_serial =
+{
+    .name = "serial_timer",
+    .attr_bits = 0,
+    .cb_mem = NULL,
+    .cb_size = 0,
+};
+static void handle_uart_ring(void *argument);
+#endif
+
 #if defined(__linux__) && defined(_WIN32)
 static const osThreadAttr_t thread_attr_serial_rx = 
 {
@@ -125,7 +138,7 @@ void elab_serial_register(elab_serial_t *serial, const char *name,
         serial->ops->set_tx(serial, false);
     }
 
-    /* Apply buffer memory */
+    /* Apply buffer messagequeue memory */
     serial->mutex_tx = osMutexNew(&_mutex_attr);
     elab_assert(serial->mutex_tx != NULL);
     serial->sem_tx = osSemaphoreNew(1, 0, NULL);
@@ -133,11 +146,22 @@ void elab_serial_register(elab_serial_t *serial, const char *name,
     serial->queue_rx = osMessageQueueNew(serial->attr.rx_bufsz, 1, NULL);
 
 
+
+
+
     /* Apply buffer memory */
 #if defined(__linux__) || defined(_WIN32)
     serial->thread_rx = osThreadNew(_thread_entry, serial, &thread_attr_serial_rx);
     elab_assert(serial->thread_rx != NULL);
 #endif
+
+    /* Newly establish the timer and start it. */
+    //创建系统定时器
+    serial->timer = osTimerNew(handle_uart_ring, osTimerPeriodic, serial, &timer_attr_serial);
+    assert_name(serial->timer != NULL, name);
+    osStatus_t ret_os = osTimerStart(serial->timer, 1); //1ms处理一次
+    elab_assert(ret_os == osOK);
+
 }
 
 /**
@@ -606,6 +630,47 @@ static void _thread_entry(void *parameter)
         }
     }
 }
+#endif
+
+#if ELAB_RTOS_CMSIS_OS_EN != 1
+
+
+/**
+ * @brief 注册环形缓冲区回调函数
+ * 
+ * @param me  设备对象
+ * @param callback  回调函数
+ */
+
+void elab_serial_rx_ringbuf_handler_register(elab_device_t *me, serial_handle_ring_buffer callback)
+{
+    elab_assert(me != NULL);
+    elab_assert(callback != NULL);
+    elab_serial_t *serial = (elab_serial_t *)me;
+    serial->cb=callback;
+}
+
+/**
+ * @brief  环形缓冲区数据处理
+ * 
+ * @param me 
+ * @note 数据处理由回调函数完成
+ */
+
+static void handle_uart_ring(void *argument)
+{   
+    elab_serial_t *serial = (elab_serial_t *)argument;
+    uint16_t len = ringbuffer_data_len(&serial->rx_ringbuf);
+
+
+    if(serial->cb != NULL) serial->cb(&serial->rx_ringbuf);
+    // if (len>4) //最小数据包长度
+    // {
+    //     if(serial->cb != NULL) serial->cb(&serial->rx_ringbuf);
+    // }
+
+}
+
 #endif
 
 #ifdef __cplusplus

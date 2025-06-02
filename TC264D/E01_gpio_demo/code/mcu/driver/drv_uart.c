@@ -2,8 +2,7 @@
 #include "../../3rd/elab/common/elab_assert.h"
 #include "../../3rd/elab/common/elab_log.h"
 #include "../../3rd/elab/common/elab_def.h"
-#include "isr_config.h"
-#include "zf_common_headfile.h"
+
 
 
 #ifdef __cplusplus
@@ -30,6 +29,10 @@ static const elab_serial_ops_t uart_driver_ops =
 
 static elab_serial_attr_t attr;
 
+#define rx_buffer_size 256
+static uint8_t uart_rx_buffer[rx_buffer_size]; //接收缓冲区
+
+
 void elab_driver_uart_init(elab_uart_driver_t *me,const char *name,uint32_t boundrate,
                      uart_tx_pin_enum tx,uart_rx_pin_enum rx,uart_index_enum uart_index)
 {
@@ -45,7 +48,7 @@ void elab_driver_uart_init(elab_uart_driver_t *me,const char *name,uint32_t boun
 
 
     attr.baud_rate = boundrate;
-    attr.rx_bufsz = 256; //接受缓冲区大小，在操作系统推荐使用消息队列，裸机建议使用ringbuffer
+    attr.rx_bufsz = rx_buffer_size; //接受缓冲区大小，在操作系统推荐使用消息队列，裸机建议使用ringbuffer
     attr.mode = ELAB_SERIAL_MODE_FULL_DUPLEX; //全双工串口
     attr.parity=ELAB_SERIAL_PARITY_NONE;
     attr.data_bits = ELAB_SERIAL_DATA_BITS_8; //数据位
@@ -54,8 +57,15 @@ void elab_driver_uart_init(elab_uart_driver_t *me,const char *name,uint32_t boun
     me->uart_index,me->baudrate,me->tx_pin,me->rx_pin);
     uart_init(me->uart_index,me->baudrate,me->tx_pin,me->rx_pin);
 
+
+    /**Apply buffer ringbuffer memory */
+    //裸机推荐使用ringbuffer
+    ringbuffer_init(&me->device.rx_ringbuf,uart_rx_buffer,rx_buffer_size);
+
     uart_rx_interrupt(me->uart_index,1); //开启接收中断
     // uart_tx_interrupt(me->uart_index,1); //开启发送中断
+
+
 
     elab_serial_register(&me->device,name,&uart_driver_ops,
     &attr,me);
@@ -154,25 +164,6 @@ static int  _write(elab_serial_t *me, const void *buffer, uint32_t size)
 
 }
 
-void uart_rx_interrupt_handler (void)
-{
-//    get_data = uart_read_byte(UART_INDEX);                                      // 接收数据 while 等待式 不建议在中断使用
-                      // 将数据写入 fifo 中
-}
-
-
-// IFX_INTERRUPT(uart1_tx_isr, 0, UART1_TX_INT_PRIO)
-// {
-//     interrupt_global_enable(0);                     // 开启中断嵌套
-
-// }
-
-IFX_INTERRUPT(uart1_rx_isr, 0, UART1_RX_INT_PRIO)
-{
-    interrupt_global_enable(0);                     // 开启中断嵌套
-
-    uart_rx_interrupt_handler();                    // 串口接收处理
-}
 
 
 

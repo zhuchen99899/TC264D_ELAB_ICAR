@@ -1,8 +1,9 @@
 #include "../driver/drv_pin.h"
 #include "../driver/drv_uart.h"
 #include "../../3rd/elab/common/elab_export.h"
-
-
+#include "isr_config.h"
+#include "zf_common_headfile.h"
+#include "../../component/ringbuf/ringbuf.h"
 static elab_pin_driver_t pin_led1;
 
 
@@ -25,3 +26,28 @@ static void dirver_uart_export(void)
 }
 
 INIT_EXPORT(dirver_uart_export, EXPORT_DRVIVER);
+
+
+
+/**uart1 接收中断 */
+uint8_t get_data;
+void uart_rx_interrupt_handler (void)
+{
+    uart_query_byte(uart1.uart_index, &get_data); 
+    ringbuffer_put(&uart1.device.rx_ringbuf, &get_data, 1); 
+}
+
+
+// IFX_INTERRUPT(uart1_tx_isr, 0, UART1_TX_INT_PRIO)
+// {
+//     interrupt_global_enable(0);                     // 开启中断嵌套
+
+// }
+
+IFX_INTERRUPT(uart1_rx_isr, 0, UART1_RX_INT_PRIO)
+{
+    interrupt_global_enable(0);                     // 开启中断嵌套
+    uart_rx_interrupt_handler();                    // 串口接收处理
+
+}
+

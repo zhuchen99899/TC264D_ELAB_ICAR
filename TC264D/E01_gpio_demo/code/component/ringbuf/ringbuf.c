@@ -9,8 +9,8 @@
  * @note 修改自rtthread ringbuff 在在单生产/单消费的模式 中可以实现无锁即两个线程只单独操作读和写
  */
 #include "ringbuf.h"
-#include "../os/cmsis_os2.h"
-#include "../3rd/elab/common/elab_assert.h"
+#include "../../os/cmsis_os2.h"
+#include "../../3rd/elab/common/elab_assert.h"
 
 ELAB_TAG("ringbuf");
 inline ringbuffer_status_t get_ringbuffer_status(ringbuf_t *rb)
