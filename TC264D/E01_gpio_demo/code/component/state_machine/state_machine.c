@@ -48,14 +48,14 @@ void fsm_ctor(sm_t *me, sm_state_handler_t init)
  * @param e 事件对象指针
  * @return sm_ret_t 
  */
-sm_ret_t  fsm_init(sm_t *me, sm_event_t *e)
+sm_ret_t  fsm_init(sm_t *me, sm_event_t *e,void* arg)
 {
 	sm_ret_t ret;
 
 	elab_assert(0 != me); 
 	elab_assert(0 != me->temp);
 
-	ret = (me->temp)(me, e);
+	ret = (me->temp)(me, e,arg);
 
 	if(ret != SM_RET_TRAN)
 	{
@@ -63,7 +63,7 @@ sm_ret_t  fsm_init(sm_t *me, sm_event_t *e)
 		
 	}
 	// 如果初始状态处理函数触发状态转换，则将当前状态设置为初始状态。
-	SM_ENTRY(me, me->temp); 
+	SM_ENTRY(me, me->temp,arg); 
 
 	me->state = me->temp;
 	return ret;
@@ -75,19 +75,19 @@ sm_ret_t  fsm_init(sm_t *me, sm_event_t *e)
  * @param me 
  * @param e 
  */
-void fsm_dispatch(sm_t *me, sm_event_t *e)
+void fsm_dispatch(sm_t *me, sm_event_t *e,void *arg)
 {
 	sm_ret_t ret;
 
 	elab_assert(me->state == me->temp); //验证状态是否稳定
 
-	ret = (me->temp)(me, e);// 调用当前状态处理函数处理事件。
+	ret = (me->temp)(me, e,arg);// 调用当前状态处理函数处理事件。
 
 
 	if(SM_RET_TRAN == ret)// 如果状态处理函数返回状态转换信号
 	{
-		SM_EXIT(me, me->state);// 创建状态退出事件 执行退出事件
-		SM_ENTRY(me, me->temp);// 创建状态进入事件 执行进入事件
+		SM_EXIT(me, me->state,arg);// 创建状态退出事件 执行退出事件
+		SM_ENTRY(me, me->temp,arg);// 创建状态进入事件 执行进入事件
 		me->state = me->temp;// 更新状态机的当前状态为目标状态
 	}
 }
@@ -106,7 +106,7 @@ sm_ret_t hsm_top(sm_t *me, const sm_event_t *e)
 static unsigned char hsm_find_path(sm_t *me,
 						sm_state_handler_t t,
 						sm_state_handler_t s,
-						sm_state_handler_t path[SM_MAX_NEST_DEPTH])
+						sm_state_handler_t path[SM_MAX_NEST_DEPTH],void* arg)
 {
 	signed char ip = -1;
 	signed char iq;
@@ -115,13 +115,13 @@ static unsigned char hsm_find_path(sm_t *me,
 	/* (a) check source==target (transition to self) */
 	if( s == t)
 	{
-		SM_EXIT(me, s);
+		SM_EXIT(me, s,arg);
 		ip = 0;
 
 		goto hsm_find_path_end;
 	}
 
-	SM_TRIG(me, t, SM_EMPTY_SIG);
+	SM_TRIG(me, t, SM_EMPTY_SIG,arg);
 	t = me->temp;
 
 	/* (b) check source==target->super */
@@ -131,12 +131,12 @@ static unsigned char hsm_find_path(sm_t *me,
 		goto hsm_find_path_end;
 	}
 
-	SM_TRIG(me, s, SM_EMPTY_SIG);
+	SM_TRIG(me, s, SM_EMPTY_SIG,arg);
 
 	/* (c) check source->super==target->super */
 	if(me->temp == t)
 	{
-		SM_EXIT(me, s);
+		SM_EXIT(me, s,arg);
 		ip = 0;
 		goto hsm_find_path_end;
 	}
@@ -144,7 +144,7 @@ static unsigned char hsm_find_path(sm_t *me,
 	/* (d) check source->super==target */
 	if( me->temp == path[0] )
 	{
-		SM_EXIT(me, s);
+		SM_EXIT(me, s,arg);
 		goto hsm_find_path_end;
 	}
 
@@ -157,7 +157,7 @@ static unsigned char hsm_find_path(sm_t *me,
 	t = me->temp;
 
 	/* find target->super->super... */
-	ret = SM_TRIG(me, path[1], SM_EMPTY_SIG);
+	ret = SM_TRIG(me, path[1], SM_EMPTY_SIG,arg);
 	while(SM_RET_SUPER == ret)
 	{
 		path[++ip] = me->temp;
@@ -171,7 +171,7 @@ static unsigned char hsm_find_path(sm_t *me,
 		}
 		else
 		{
-			ret = SM_TRIG(me, me->temp, SM_EMPTY_SIG);
+			ret = SM_TRIG(me, me->temp, SM_EMPTY_SIG,arg);
 		}
 	}
 
@@ -180,7 +180,7 @@ static unsigned char hsm_find_path(sm_t *me,
 	{
 		elab_assert(ip < SM_MAX_NEST_DEPTH);
 
-		SM_EXIT(me, s);
+		SM_EXIT(me, s,arg);
 
 		/* (f) check the rest of source->super
 		 *                  == target->super->super...
@@ -213,9 +213,9 @@ static unsigned char hsm_find_path(sm_t *me,
 			ret = SM_RET_IGNORE;
 			do
 			{
-				if(SM_RET_HANDLED  == SM_EXIT(me, t))
+				if(SM_RET_HANDLED  == SM_EXIT(me, t,arg))
 				{
-					SM_TRIG(me, t, SM_EMPTY_SIG);
+					SM_TRIG(me, t, SM_EMPTY_SIG,arg);
 				}
 				t = me->temp;
 				iq = ip;
@@ -250,7 +250,7 @@ void hsm_ctor(sm_t *me, sm_state_handler_t init)
 	me->state = hsm_top;
 	me->temp  = init;
 }
-void hsm_init(sm_t *me, sm_event_t *e)
+void hsm_init(sm_t *me, sm_event_t *e,void *arg)
 {
 	sm_ret_t ret;
 	signed char ip;
@@ -262,7 +262,7 @@ void hsm_init(sm_t *me, sm_event_t *e)
 	elab_assert(0 != me->temp);
 	elab_assert(hsm_top == t);
 
-	ret = (me->temp)(me, e);
+	ret = (me->temp)(me, e,arg);
 	elab_assert(SM_RET_TRAN == ret);
 
 	do
@@ -270,11 +270,11 @@ void hsm_init(sm_t *me, sm_event_t *e)
 		ip = 0;
 
 		path[0] = me->temp;
-		SM_TRIG(me, me->temp,SM_EMPTY_SIG);
+		SM_TRIG(me, me->temp,SM_EMPTY_SIG,arg);
 		while( t != me->temp )
 		{
 			path[++ip] = me->temp;
-			SM_TRIG(me, me->temp,SM_EMPTY_SIG);
+			SM_TRIG(me, me->temp,SM_EMPTY_SIG,arg);
 		}
 		me->temp = path[0];
 
@@ -282,18 +282,18 @@ void hsm_init(sm_t *me, sm_event_t *e)
 
 		do
 		{
-			SM_ENTRY(me, path[ip--]);
+			SM_ENTRY(me, path[ip--],arg);
 		}while(ip >= 0);
 
 		t = path[0];
-	}while(SM_RET_TRAN == SM_TRIG(me, t, SM_INIT_SIG));
+	}while(SM_RET_TRAN == SM_TRIG(me, t, SM_INIT_SIG,arg));
 
 	me->temp = t;
 	me->state = me->temp;
 }
 
 
-void hsm_dispatch(sm_t *me, sm_event_t *e)
+void hsm_dispatch(sm_t *me, sm_event_t *e,void *arg)
 {
 	sm_state_handler_t t = me->state;
 	sm_state_handler_t s;
@@ -308,10 +308,10 @@ void hsm_dispatch(sm_t *me, sm_event_t *e)
 	do
 	{
 		s = me->temp;
-		ret = s(me, e); 	// 调用状态处理函数
+		ret = s(me, e,arg); 	// 调用状态处理函数
 		if(SM_RET_UNHANDLED == ret)
 		{
-			ret = SM_TRIG(me, s, SM_EMPTY_SIG);
+			ret = SM_TRIG(me, s, SM_EMPTY_SIG,arg);
 		}
 	}while(SM_RET_SUPER == ret);
 
@@ -327,34 +327,34 @@ void hsm_dispatch(sm_t *me, sm_event_t *e)
 		/* exit current state to transition source s... */
 		for( ; s != t; t = me->temp)
 		{
-			ret = SM_EXIT(me, t);
+			ret = SM_EXIT(me, t,arg);
 			if(SM_RET_HANDLED == ret)
 			{
-				SM_TRIG(me, t, SM_EMPTY_SIG);
+				SM_TRIG(me, t, SM_EMPTY_SIG,arg);
 			}
 		}
 
-		ip = hsm_find_path(me, path[0], s, path);
+		ip = hsm_find_path(me, path[0], s, path,arg);
 
 		for(; ip>=0; ip--)
 		{
-			SM_ENTRY(me, path[ip]);
+			SM_ENTRY(me, path[ip],arg);
 		}
 
 		t = path[0];
 		me->temp = t;
 
 		/* drill into the target hierarchy... */
-		while( SM_RET_TRAN == SM_TRIG(me, t, SM_INIT_SIG) )
+		while( SM_RET_TRAN == SM_TRIG(me, t, SM_INIT_SIG,arg) )
 		{
 			ip = 0;
 			path[0] = me->temp;
 
-			SM_TRIG(me, me->temp, SM_EMPTY_SIG);
+			SM_TRIG(me, me->temp, SM_EMPTY_SIG,arg);
 			while(t != me->temp)
 			{
 				path[++ip] = me->temp;
-				SM_TRIG(me, me->temp, SM_EMPTY_SIG);
+				SM_TRIG(me, me->temp, SM_EMPTY_SIG,arg);
 			}
 			me->temp = path[0];
 
@@ -362,7 +362,7 @@ void hsm_dispatch(sm_t *me, sm_event_t *e)
 
 			do
 			{
-				SM_ENTRY(me, path[ip--]);
+				SM_ENTRY(me, path[ip--],arg);
 			}while(ip >= 0);
 
 			t = path[0];

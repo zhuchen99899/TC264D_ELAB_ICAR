@@ -1,5 +1,5 @@
 /**
- * @file ringbuf_handle.h
+ * @file serial1_ringbuf_handle.h
  * @author ZC (387646983@qq.com)
  * @brief 
  * @version 0.1
@@ -17,6 +17,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
+typedef struct fsm{
+
+    
+}
 
 
 void _ringbuf_handler(ringbuf_t *ringbuf);

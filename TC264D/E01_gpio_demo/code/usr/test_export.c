@@ -3,7 +3,7 @@
 #include "elab_device.h"
 #include "cmsis_os2.h"
 #include "../3rd/elab/edf/normal/elab_serial.h"
-#include "ringbuf_handle.h"
+#include "serial1_ringbuf_handle.h"
 ELAB_TAG("test_export");
 void func_TEST(uint32_t *handle)
 {

@@ -1,4 +1,4 @@
-#include "ringbuf_handle.h"
+#include "serial1_ringbuf_handle.h"
 #include "../3rd/elab/common/elab_assert.h"
 #include "elab_export.h"
 
@@ -9,6 +9,8 @@ extern "C" {
 #endif
 
 ELAB_TAG("ringbuf_handle");
+
+sm_t com_fsm; 
 
 
 void init_fsm(void)
@@ -22,6 +24,7 @@ INIT_EXPORT(init_fsm,EXPORT_MIDWARE);
 void _ringbuf_handler(ringbuf_t *ringbuf)
 {
  
+
     elab_assert(ringbuf != NULL);
     uint8_t data = 0;
     //ringbuffer_getbyte(ringbuf, 1); 
