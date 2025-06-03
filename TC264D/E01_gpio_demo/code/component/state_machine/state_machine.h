@@ -35,7 +35,8 @@ typedef int32_t sm_sig_t;
 typedef struct _event_s{
 
     sm_sig_t sig; //信号
-    void *event; //事件
+    void *event; //事件附带信息
+	void *arg; //附加参数
 }sm_event_t;
 
 
@@ -59,7 +60,7 @@ enum
 
 
 typedef struct sm_s sm_t;
-typedef sm_ret_t (*sm_state_handler_t)(sm_t *fsm,sm_event_t const *e,void *arg);
+typedef sm_ret_t (*sm_state_handler_t)(sm_t *fsm,sm_event_t const *e);
 
 /**
  * @brief 状态机
@@ -95,22 +96,22 @@ enum sm_reserved_sig
 extern sm_event_t sm_reserved_event[];
 
 //状态机触发 进入 退出 宏
-#define SM_TRIG(me, state, sig,arg) 	((state)(me, &sm_reserved_event[5 + (sig)],arg))
-#define SM_ENTRY(me, state,arg) 		SM_TRIG(me, state, SM_ENTRY_SIG,arg)
-#define SM_EXIT(me, state,arg) 		SM_TRIG(me, state, SM_EXIT_SIG,arg)
+#define SM_TRIG(me, state, sig) 	((state)(me, &sm_reserved_event[5 + (sig)]))
+#define SM_ENTRY(me, state) 		SM_TRIG(me, state, SM_ENTRY_SIG)
+#define SM_EXIT(me, state) 		SM_TRIG(me, state, SM_EXIT_SIG)
 
 
 
 
 void fsm_ctor(sm_t *me, sm_state_handler_t init);
-sm_ret_t  fsm_init(sm_t *me, sm_event_t *e,void *arg); 
-void fsm_dispatch(sm_t *me, sm_event_t *e,void *arg);
+sm_ret_t  fsm_init(sm_t *me, sm_event_t *e); 
+void fsm_dispatch(sm_t *me, sm_event_t *e);
 
 
 void hsm_ctor(sm_t *me, sm_state_handler_t init);
 sm_ret_t hsm_top(sm_t *me, const sm_event_t *e);
-void hsm_init(sm_t *me, sm_event_t *e,void *arg);
-void hsm_dispatch(sm_t *me, sm_event_t *e,void *arg);
+void hsm_init(sm_t *me, sm_event_t *e);
+void hsm_dispatch(sm_t *me, sm_event_t *e);
 
 
 

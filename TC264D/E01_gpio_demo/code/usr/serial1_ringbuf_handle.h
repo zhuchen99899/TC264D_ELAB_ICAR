@@ -19,11 +19,6 @@ extern "C" {
 #endif
 
 
-typedef struct fsm{
-
-    
-}
-
 
 void _ringbuf_handler(ringbuf_t *ringbuf);
 

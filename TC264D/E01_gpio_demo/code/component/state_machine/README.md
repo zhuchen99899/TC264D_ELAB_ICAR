@@ -86,7 +86,7 @@ int main()
     fsm_ctor(&traffic_light, red_light);
 
     // 创建事件对象
-    sm_event_t timer_event = { EVENT_TIMER_EXPIRED, 0 };
+    sm_event_t timer_event = { EVENT_TIMER_EXPIRED, 0,0 };
 
     // 初始化状态机
     fsm_init(&traffic_light, &timer_event);
@@ -232,7 +232,7 @@ void main()
 {
     
         static int temperature = 25;
-    sm_event_t temp_event = { TEMPERATURE_CHANGED, &temperature }; // 定义温度事件
+    sm_event_t temp_event = { TEMPERATURE_CHANGED, &temperature ,0}; // 定义温度事件
 
     // 初始化状态机，设置初始状态为空闲
     fsm_ctor(&temperature_fsm, init);
