@@ -36,7 +36,6 @@ typedef struct _event_s{
 
     sm_sig_t sig; //信号
     void *event; //事件附带信息
-	void *arg; //附加参数
 }sm_event_t;
 
 

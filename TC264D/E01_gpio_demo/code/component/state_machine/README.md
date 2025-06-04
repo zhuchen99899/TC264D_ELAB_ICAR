@@ -219,11 +219,11 @@ sm_ret_t init(sm_t *me, const sm_event_t *e) {
     case SM_EXIT_SIG:
         elog_info("退出空闲状态\n");
         return SM_HANDLED();
-        case TEMPERATURE_CHANGED: 
-            return SM_TRAN(me, idle); // 切换到空闲
-        break;
+    case TEMPERATURE_CHANGED: 
+        return SM_TRAN(me, idle); // 切换到空闲
+    break;
     default:
-        break;
+        return SM_IGNORE();
     }
     
 }
