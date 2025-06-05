@@ -103,7 +103,7 @@ sm_ret_t hsm_top(sm_t *me, const sm_event_t *e)
 	return SM_IGNORE();
 }
 
-static unsigned char hsm_find_path(sm_t *me,
+static uint8_t hsm_find_path(sm_t *me,
 						sm_state_handler_t t,
 						sm_state_handler_t s,
 						sm_state_handler_t path[SM_MAX_NEST_DEPTH])
@@ -244,50 +244,57 @@ hsm_find_path_end:
 
 void hsm_ctor(sm_t *me, sm_state_handler_t init)
 {
-	elab_assert(0 != me);
-	elab_assert(0 != init);
+    elab_assert(0 != me);
+    elab_assert(0 != init);
 
-	me->state = hsm_top;
-	me->temp  = init;
+    me->state = hsm_top;  // 初始化状态为顶层状态
+    me->temp  = init;     // 初始化临时状态为传入的初始状态
 }
 void hsm_init(sm_t *me, sm_event_t *e)
 {
 	sm_ret_t ret;
-	signed char ip;
+	int8_t ip;
 
-	sm_state_handler_t path[SM_MAX_NEST_DEPTH];
-	sm_state_handler_t t = me->state;
+	sm_state_handler_t path[SM_MAX_NEST_DEPTH];// 用于存储状态路径
+
+	sm_state_handler_t t = me->state;// 当前状态
 
 	elab_assert(0 != me);
 	elab_assert(0 != me->temp);
-	elab_assert(hsm_top == t);
-
-	ret = (me->temp)(me, e);
-	elab_assert(SM_RET_TRAN == ret);
+	elab_assert(hsm_top == t);// 确保当前状态为顶层状态
+	ret = (me->temp)(me, e);// 调用初始状态处理函数
+	elab_assert(SM_RET_TRAN == ret); // 确保初始状态处理函数返回状态切换
 
 	do
 	{
-		ip = 0;
-
+		ip = 0;// 初始化路径索引
+		// 将临时状态存储到路径数组的第一个位置
 		path[0] = me->temp;
+		 // 触发临时状态的处理函数，发送空信号 SM_EMPTY_SIG
 		SM_TRIG(me, me->temp,SM_EMPTY_SIG);
 		while( t != me->temp )
-		{
+		{// 将当前临时状态存储到路径数组的下一个位置
 			path[++ip] = me->temp;
+			// 触发当前临时状态的处理函数，发送空信号 SM_EMPTY_SIG
 			SM_TRIG(me, me->temp,SM_EMPTY_SIG);
+			t = me->temp;  // 更新 t 的值为当前临时状态
+			elog_debug("t = %p, me->temp = %p", t, me->temp);  // 打印 t 和 me->temp 的值
 		}
+		 // 将路径数组的第一个状态赋值给临时状态
 		me->temp = path[0];
-
+		// 确保路径索引未超过最大深度限制
 		elab_assert(ip < SM_MAX_NEST_DEPTH);
 
 		do
 		{
 			SM_ENTRY(me, path[ip--]);
+
 		}while(ip >= 0);
 
 		t = path[0];
+		elog_debug("hsm_5");
 	}while(SM_RET_TRAN == SM_TRIG(me, t, SM_INIT_SIG));
-
+elog_debug("hsm_6");
 	me->temp = t;
 	me->state = me->temp;
 }

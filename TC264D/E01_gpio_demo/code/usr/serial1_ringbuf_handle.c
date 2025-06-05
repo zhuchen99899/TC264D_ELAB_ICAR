@@ -23,7 +23,7 @@ uint8_t checksum; //校验和字节
 }serial_hsm_t;
 
 // 状态函数声明
-static sm_ret_t hsm_init_state(sm_t *me, const sm_event_t *e);
+static sm_ret_t hsm_top_state(sm_t *me, const sm_event_t *e);
 static sm_ret_t hsm_peek_header_state(sm_t *me, const sm_event_t *e);
 static sm_ret_t hsm_peek_length_state(sm_t *me, const sm_event_t *e);
 static sm_ret_t hsm_peek_tail_state(sm_t *me, const sm_event_t *e);
@@ -32,9 +32,9 @@ static sm_ret_t hsm_process_payload_state(sm_t *me, const sm_event_t *e);
 
 
 //状态机初始化
-void serial_sm_crot(serial_hsm_t *me)
+void serial_sm_ctor(serial_hsm_t *me,sm_state_handler_t init)
 {
-fsn_ctor(&me->supper, top_state);
+hsm_ctor(&me->supper, init);
 me->ringbuffer = NULL;
 memset(me->frame, 0, sizeof(me->frame));
 me->len = 0;
@@ -43,20 +43,27 @@ me->checksum = 0;
 
 
 // 初始化状态
-static sm_ret_t top_state(sm_t *me, const sm_event_t *e) {
+static sm_ret_t hsm_top_state(sm_t *me, const sm_event_t *e) {
+
     switch (e->sig) {
         case SM_ENTRY_SIG:
-            printf("State Machine Initialized\n");
+            elog_info("State Machine Initialized\n");
             return SM_HANDLED();
-        case SM_INIT_SIG:
-            return SM_TRAN(me, peek_header_state);
+        case SM_USER_SIG:
+
+            return SM_TRAN(me, hsm_peek_header_state);
+        case SM_EMPTY_SIG:
+            elog_info("empty_sig");
+        // 根状态可以忽略 SM_EMPTY_SIG
+        return SM_IGNORE();
         default:
+
             return SM_UNHANDLED();
     }
 }
 
 // Peek 头部状态
-static sm_ret_t peek_header_state(sm_t *me, const sm_event_t *e) {
+static sm_ret_t hsm_peek_header_state(sm_t *me, const sm_event_t *e) {
     serial_hsm_t *self = (serial_hsm_t *)me;
 
     switch (e->sig) {
@@ -67,23 +74,29 @@ static sm_ret_t peek_header_state(sm_t *me, const sm_event_t *e) {
         case SM_USER_SIG: {
             uint8_t bytes[2];
             ringbuffer_peek(self->ringbuffer, bytes);  // Peek 2 字节头部
+                            elog_info("byte[0]=%x",bytes[0]);
+                elog_info("byte[1]=%x",bytes[1]);
             if (bytes[0] == 0xE0 && bytes[1] == 0xB7) {
+
                 printf("Header matched: 0xE0 0xB7\n");
-                return SM_TRAN(me, peek_length_state);
+                return SM_TRAN(me, hsm_peek_length_state);
             } else {
                 printf("Header mismatch\n");
             }
             return SM_HANDLED();
         }
-
+        case SM_EMPTY_SIG://层次状态机必须子状态必须返回父状态
+            // 返回父状态 hsm_top_state
+            return SM_SUPER(me, hsm_top_state);
         default:
+            elog_info("header");
             return SM_UNHANDLED();
     }
 }
 
 
 // Peek 长度状态
-static sm_ret_t peek_length_state(sm_t *me, const sm_event_t *e) {
+static sm_ret_t hsm_peek_length_state(sm_t *me, const sm_event_t *e) {
     serial_hsm_t *self = (serial_hsm_t *)me;
 
     switch (e->sig) {
@@ -96,16 +109,18 @@ static sm_ret_t peek_length_state(sm_t *me, const sm_event_t *e) {
             ringbuffer_peek(self->ringbuffer, length_bytes);  // Peek 2 字节长度
             self->len = (length_bytes[3] << 8) | length_bytes[2];
             printf("Payload length: %d\n", self->len);
-            return SM_TRAN(me, peek_tail_state);
+            return SM_TRAN(me, hsm_peek_tail_state);
         }
-
+        case SM_EMPTY_SIG:
+            // 返回父状态 hsm_peek_header_state
+            return SM_SUPER(me, hsm_peek_header_state);
         default:
             return SM_UNHANDLED();
     }
 }
 
 // Peek 尾部状态
-static sm_ret_t peek_tail_state(sm_t *me, const sm_event_t *e) {
+static sm_ret_t hsm_peek_tail_state(sm_t *me, const sm_event_t *e) {
     serial_hsm_t *self = (serial_hsm_t *)me;
 
     switch (e->sig) {
@@ -118,13 +133,15 @@ static sm_ret_t peek_tail_state(sm_t *me, const sm_event_t *e) {
             ringbuffer_peek(self->ringbuffer, tail_bytes);  // Peek 2 字节尾部
             if (tail_bytes[self->len] == 0x00 && tail_bytes[self->len+1] == 0xAA) {
                 printf("Tail matched: 0x00 0xAA\n");
-                return SM_TRAN(me, get_data_state);
+                return SM_TRAN(me, hsm_get_data_state);
             } else {
                 printf("Tail mismatch\n");
             }
             return SM_HANDLED();
         }
-
+        case SM_EMPTY_SIG:
+            // 返回父状态 hsm_peek_length_state
+            return SM_SUPER(me, hsm_peek_length_state);
         default:
             return SM_UNHANDLED();
     }
@@ -133,7 +150,7 @@ static sm_ret_t peek_tail_state(sm_t *me, const sm_event_t *e) {
 
 
 // Get 数据状态
-static sm_ret_t get_data_state(sm_t *me, const sm_event_t *e) {
+static sm_ret_t hsm_get_data_state(sm_t *me, const sm_event_t *e) {
     serial_hsm_t *self = (serial_hsm_t *)me;
 
     switch (e->sig) {
@@ -154,14 +171,16 @@ static sm_ret_t get_data_state(sm_t *me, const sm_event_t *e) {
             // 校验和验证
             if (self->checksum == self->frame[self->len-2]) {
                 printf("Checksum verified: 0x%02X\n", self->checksum);
-                return SM_TRAN(me, process_payload_state);
+                return SM_TRAN(me, hsm_process_payload_state);
             } else {
                 printf("Checksum error! Expected: 0x%02X, Received: 0x%02X\n",
                        self->checksum, self->frame[self->len-2]);
-                return SM_TRAN(me, peek_header_state);  // 重置到头部状态
+                return SM_TRAN(me, hsm_peek_header_state);  // 重置到头部状态
             }
         }
-
+        case SM_EMPTY_SIG:
+            // 返回父状态 hsm_peek_tail_state
+            return SM_SUPER(me, hsm_peek_tail_state);
         default:
             return SM_UNHANDLED();
     }
@@ -170,7 +189,7 @@ static sm_ret_t get_data_state(sm_t *me, const sm_event_t *e) {
 
 
 // 处理数据负载状态
-static sm_ret_t process_payload_state(sm_t *me, const sm_event_t *e) {
+static sm_ret_t hsm_process_payload_state(sm_t *me, const sm_event_t *e) {
     serial_hsm_t *self = (serial_hsm_t *)me;
 
     switch (e->sig) {
@@ -180,8 +199,10 @@ static sm_ret_t process_payload_state(sm_t *me, const sm_event_t *e) {
             for (uint16_t i = 0; i < self->len-2; i++) {
                 printf("Payload[%d]: 0x%02X\n", i, self->frame[4+ i]);
             }
-            return SM_TRAN(me, peek_header_state);  // 重置到头部状态
-
+            return SM_TRAN(me, hsm_peek_header_state);  // 重置到头部状态
+            case SM_EMPTY_SIG:
+            // 返回父状态，例如 hsm_peek_tail_state
+            return SM_SUPER(me, hsm_peek_tail_state);
         default:
             return SM_UNHANDLED();
     }
@@ -189,11 +210,13 @@ static sm_ret_t process_payload_state(sm_t *me, const sm_event_t *e) {
 
 void init_fsm(void)
 {
+    // 模拟事件驱动
+    sm_event_t init_event = { .sig = SM_USER_SIG,0 };
 
     serial_hsm_t serial_hsm;
-    serial_sm_ctor(&serial_hsm);
+    serial_sm_ctor(&serial_hsm, hsm_top_state);
     // 初始化状态
-    hsm_init(&serial_hsm.supper, NULL);
+    hsm_init(&serial_hsm.supper, &init_event);
     // 模拟环形缓冲区中的数据流
     uint8_t data_stream[] = {
         0xE0, 0xB7,       // 头部
@@ -202,15 +225,17 @@ void init_fsm(void)
         0x06,             // 校验和
         0x00, 0xAA        // 尾部
     };
-       ringbuf_t ringbuffer;
-    ringbuffer_init(&ringbuffer, data_stream, sizeof(data_stream));
+    ringbuf_t ringbuffer;
 
+    ringbuffer_init(&ringbuffer, data_stream, sizeof(data_stream));
+    serial_hsm.ringbuffer=&ringbuffer;
     // 模拟事件驱动
     sm_event_t event = { .sig = SM_USER_SIG,0 };
+
     //while (!ringbuffer_is_empty(&ringbuffer)) {
-        hsm_dispatch(&serial_hsm.supper, &event);
-    //}
+    hsm_dispatch(&serial_hsm.supper, &event);
 }
+
 
 INIT_EXPORT(init_fsm,EXPORT_MIDWARE);
 
