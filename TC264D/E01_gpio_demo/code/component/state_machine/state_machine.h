@@ -34,8 +34,8 @@ typedef int32_t sm_sig_t;
  */
 typedef struct _event_s{
 
-    sm_sig_t sig; //信号
-    void *event; //事件附带信息
+    sm_sig_t sig; // 事件信号（标识事件类型）
+    void *event;// 事件附加参数（可传指针/结构体）
 }sm_event_t;
 
 
@@ -59,6 +59,7 @@ enum
 
 
 typedef struct sm_s sm_t;
+//状态处理函数类型
 typedef sm_ret_t (*sm_state_handler_t)(sm_t *fsm,sm_event_t const *e);
 
 /**
@@ -66,8 +67,8 @@ typedef sm_ret_t (*sm_state_handler_t)(sm_t *fsm,sm_event_t const *e);
  * 
  */
 struct sm_s{
-    sm_state_handler_t state;
-    sm_state_handler_t temp;
+    sm_state_handler_t state;// 当前状态处理函数
+    sm_state_handler_t temp;// 用于跳转前暂存目标状态（状态变更过程用）
 };
 
 

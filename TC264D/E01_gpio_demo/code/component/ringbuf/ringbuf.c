@@ -65,7 +65,7 @@ void ringbuffer_init(ringbuf_t *rb, uint8_t *pool, uint16_t size)
 
 /*initialize the read and write index */
 rb->write_mirror=rb->read_index=0;
-rb->read_mirror=rb->read_index=0;
+rb->read_mirror=rb->write_index=0;
 
 /*set buffer poll and size */
 rb->buffer = pool;
@@ -353,24 +353,22 @@ uint16_t ringbuffer_peek(ringbuf_t *rb, uint8_t **ptr)
 
     /* whether has enough data  */
     size = ringbuffer_data_len(rb);
-
     /* no data */
     if (size == 0)
         return 0;
-
     *ptr = &rb->buffer[rb->read_index];
-
+    
     if ((uint8_t)(rb->buffer_size - rb->read_index) > size)
     {
-        rb->read_index += size;
+        // rb->read_index += size;
         return size;
     }
 
     size = rb->buffer_size - rb->read_index;
 
     /* we are going into the other side of the mirror */
-    rb->read_mirror = ~rb->read_mirror;
-    rb->read_index = 0;
+    // rb->read_mirror = ~rb->read_mirror;
+    // rb->read_index = 0;
 
     return size;
 }
