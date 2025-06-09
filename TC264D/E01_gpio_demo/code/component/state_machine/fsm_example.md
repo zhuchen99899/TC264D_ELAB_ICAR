@@ -24,7 +24,7 @@ sm_ret_t yellow_light(sm_t *me, const sm_event_t *e);
 
 // 状态机对象
 sm_t traffic_light;
-
+#define EVENT_TIMER_EXPIRED 1
 // 红灯状态处理函数
 sm_ret_t red_light(sm_t *me, const sm_event_t *e)
 {

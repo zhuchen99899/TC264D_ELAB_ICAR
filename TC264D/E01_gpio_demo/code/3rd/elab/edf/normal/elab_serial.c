@@ -157,11 +157,12 @@ void elab_serial_register(elab_serial_t *serial, const char *name,
 
     /* Newly establish the timer and start it. */
     //创建系统定时器
+    #if ELAB_RTOS_CMSIS_OS_EN != 1
     serial->timer = osTimerNew(handle_uart_ring, osTimerPeriodic, serial, &timer_attr_serial);
     assert_name(serial->timer != NULL, name);
     osStatus_t ret_os = osTimerStart(serial->timer, 1); //1ms处理一次
     elab_assert(ret_os == osOK);
-
+    #endif
 }
 
 /**
@@ -660,7 +661,7 @@ void elab_serial_rx_ringbuf_handler_register(elab_device_t *me, serial_handle_ri
 static void handle_uart_ring(void *argument)
 {   
     elab_serial_t *serial = (elab_serial_t *)argument;
-    uint16_t len = ringbuffer_data_len(&serial->rx_ringbuf);
+    // uint16_t len = ringbuffer_data_len(&serial->rx_ringbuf);
 
 
     if(serial->cb != NULL) serial->cb(&serial->rx_ringbuf);

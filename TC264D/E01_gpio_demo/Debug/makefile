@@ -84,6 +84,17 @@ endif
 
 -include ../makefile.defs
 
+OPTIONAL_TOOL_DEPS := \
+$(wildcard ../makefile.defs) \
+$(wildcard ../makefile.init) \
+$(wildcard ../makefile.targets) \
+
+
+BUILD_ARTIFACT_NAME := E01_gpio_demo
+BUILD_ARTIFACT_EXTENSION := elf
+BUILD_ARTIFACT_PREFIX :=
+BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
+
 # Add inputs and outputs from these tool invocations to the build variables 
 SECONDARY_SIZE += \
 E01_gpio_demo.siz \
@@ -91,17 +102,20 @@ E01_gpio_demo.siz \
 
 
 # All Target
-all: E01_gpio_demo.elf secondary-outputs
+all: main-build
+
+# Main-build Target
+main-build: E01_gpio_demo.elf secondary-outputs
 
 # Tool invocations
-E01_gpio_demo.elf: $(OBJS)
+E01_gpio_demo.elf: $(OBJS) makefile objects.mk $(OPTIONAL_TOOL_DEPS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: TASKING Linker'
-	cctc -lrt -lfp_fpu -lcs_fpu  -Wl-Oc -Wl-OL -Wl-Ot -Wl-Ox -Wl-Oy "D:\code\NIT_EE_Car\R3\controller\TC264D\E01_gpio_demo\libraries\zf_device\zf_device_config.a" -Wl--map-file="E01_gpio_demo.map" -Wl-mc -Wl-mf -Wl-mi -Wl-mk -Wl-ml -Wl-mm -Wl-md -Wl-mr -Wl-mu --no-warnings= -Wl--error-limit=42 --exceptions --strict --anachronisms --force-c++ -Ctc26xb   -o"E01_gpio_demo.elf" -Wl-o"E01_gpio_demo.hex:IHEX" --lsl-core=vtc  --lsl-file=../Lcf_Tasking_Tricore_Tc.lsl $(OBJS)
+	cctc -lrt -lfp_fpu -lcs_fpu  -Wl-Oc -Wl-OL -Wl-Ot -Wl-Ox -Wl-Oy "D:\Code\embedded\3.work\ICAR\TC264D\E01_gpio_demo\libraries\zf_device\zf_device_config.a" -Wl--map-file="E01_gpio_demo.map" -Wl-mc -Wl-mf -Wl-mi -Wl-mk -Wl-ml -Wl-mm -Wl-md -Wl-mr -Wl-mu --no-warnings= -Wl--error-limit=42 --exceptions --strict --anachronisms --force-c++ -Ctc26xb   -o"E01_gpio_demo.elf" -Wl-o"E01_gpio_demo.hex:IHEX" --lsl-core=vtc  --lsl-file=../Lcf_Tasking_Tricore_Tc.lsl $(OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-E01_gpio_demo.siz: E01_gpio_demo.elf
+E01_gpio_demo.siz: E01_gpio_demo.elf makefile objects.mk $(OPTIONAL_TOOL_DEPS)
 	@echo 'Invoking: Print Size'
 	elfsize  "E01_gpio_demo.elf"
 	@echo 'Finished building: $@'
@@ -114,6 +128,6 @@ clean:
 
 secondary-outputs: $(SECONDARY_SIZE)
 
-.PHONY: all clean dependents
+.PHONY: all clean dependents main-build
 
 -include ../makefile.targets

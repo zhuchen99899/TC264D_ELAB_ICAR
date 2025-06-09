@@ -12,7 +12,6 @@
 #include "state_machine.h"
 #include "../../3rd/elab/common/elab_assert.h"
 
-
 ELAB_TAG("StateMachine");
 // 预留事件数组，用于定义状态机的基本事件类型。
 // 每个事件由信号类型和附加数据组成，初始值为0。
