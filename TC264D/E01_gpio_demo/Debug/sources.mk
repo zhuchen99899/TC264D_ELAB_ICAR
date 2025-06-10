@@ -30,6 +30,7 @@ code/3rd/elab/edf/normal \
 code/3rd/elab/edf/user \
 code/3rd/elab/elib \
 code/3rd/list \
+code/3rd/xfusion/xf_utils \
 code/component/ringbuf \
 code/component/state_machine \
 code/export \

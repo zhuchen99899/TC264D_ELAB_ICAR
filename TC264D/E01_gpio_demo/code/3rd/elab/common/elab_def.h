@@ -41,9 +41,14 @@ typedef enum elab_err
     ELAB_ERR_BUS                        = -13,
 } elab_err_t;
 
-
+#if defined(__linux__)
+#define STR_ENTER                                   "\n"
+#else
+#define STR_ENTER                                   "\r\n"
+#endif
 
 /* Compiler Related Definitions */
+
 
 
 #if defined(__x86_64__) || defined(__aarch64__)

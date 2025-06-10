@@ -4,6 +4,10 @@
 
 #include "../3rd/elab/edf/normal/elab_serial.h"
 #include "../component/state_machine/state_machine.h"
+#include "../3rd/xfusion/xf_utils/xf_utils_log.h"
+
+#include "handle_cmd.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -12,7 +16,6 @@ ELAB_TAG("ringbuf_handle");
 
 
 #define SIG_PARSE 1
-
 
 typedef struct com_fsm_s
 {
@@ -58,14 +61,15 @@ static sm_ret_t parse_header(sm_t *me,sm_event_t const *e)
         len=ringbuffer_peek(fsm->ringbuffer, &fsm->peekPointer);
         if(len>0) 
         {
-        elog_info("header0=%x",fsm->peekPointer[0]);
-        elog_info("header1=%x",fsm->peekPointer[1]);
+
             if(fsm->peekPointer[0]==0x55&&fsm->peekPointer[1]==0xaa)
             {
+            elog_info("header ok");
             return SM_TRAN(&fsm->supper,parse_remainingLen);
 
             }
             else{
+                elog_info("header error");
                 return SM_TRAN(&fsm->supper,init);
             }
 
@@ -90,16 +94,18 @@ static sm_ret_t parse_remainingLen(sm_t *me,sm_event_t const *e)
         fsm->remainingLen=fsm->peekPointer[2]<<8|fsm->peekPointer[3];
         if(fsm->remainingLen>0)
         return SM_TRAN(&fsm->supper,parse_sum);
-        
+        else return SM_TRAN(&fsm->supper,parse_header);
     }
 return SM_IGNORE();   // 使用宏标记事件忽略
 }
 
-uint8_t data[256];
 
 static sm_ret_t parse_sum(sm_t *me,sm_event_t const *e)
 {
+    
+
     com_fsm_t *fsm =(com_fsm_t* )me;
+    uint8_t data[fsm->remainingLen+4];
     uint8_t sum=0;
     switch (e->sig)
     {
@@ -108,14 +114,17 @@ static sm_ret_t parse_sum(sm_t *me,sm_event_t const *e)
         {
             sum+=fsm->peekPointer[i];
         }
-        elog_info("caculate_sum=%x",sum);
-        elog_info("sum=%x",fsm->peekPointer[fsm->remainingLen+3]); 
+
         if(sum==fsm->peekPointer[fsm->remainingLen+3])
+        {
+        elog_info("checksum ok");
         return SM_TRAN(&fsm->supper,handleData);
+        }
         else 
         {
+        elog_info("checksum error");
         ringbuffer_get(fsm->ringbuffer,data,fsm->remainingLen+4); //从缓冲区取出废弃数据
-        return SM_TRAN(&fsm->supper,init);
+        return SM_TRAN(&fsm->supper,parse_header);
         }
 
     }
@@ -124,15 +133,21 @@ return SM_IGNORE();   // 使用宏标记事件忽略
 
 static sm_ret_t handleData(sm_t *me,sm_event_t const *e)
 {
+
     com_fsm_t *fsm=(com_fsm_t *)me;
+    uint8_t data[fsm->remainingLen+4];
     uint16_t len;
+
     switch (e->sig)
     {
     case SIG_PARSE:
-    len=ringbuffer_get(fsm->ringbuffer,data,fsm->remainingLen+2);
-    if(data[2]==0xFA) elog_info("get cmd and handledata:%x",data[3]);
+        len=ringbuffer_get(fsm->ringbuffer,data,fsm->remainingLen+4);
+        XF_LOG_BUFFER_HEX(data,fsm->remainingLen+4);
+        parse_command(data+4);
+        return SM_TRAN(&fsm->supper,parse_header);
     }
-    return SM_TRAN(&fsm->supper,init);
+
+return SM_IGNORE();   // 使用宏标记事件忽略
 }
 
 
@@ -145,14 +160,16 @@ uint8_t data_stream[]={
 0x55,0xAA, //固定头部
 0x00,0x06, //大端模式
 0XFA,0XFF,0XFF,0XFF,0XFF, //数据负载
-0xFA //校验和
+0xFB //校验和
 };
+
+
+uint8_t str[]="Hello world!";
 void init_fsm(void)
 {
 
     ringbuffer_init(&ringbuffer, ringpool, sizeof(ringpool));
     ringbuffer_put(&ringbuffer, data_stream, sizeof(data_stream));
-    
     serial_fsm_ctor(&serial_fsm.supper,init);
     serial_fsm.ringbuffer=&ringbuffer;
     fsm_init(&serial_fsm.supper,NULL);
@@ -167,6 +184,8 @@ void init_fsm(void)
     fsm_dispatch(&serial_fsm.supper, &event);
     fsm_dispatch(&serial_fsm.supper, &event);
     fsm_dispatch(&serial_fsm.supper, &event);
+
+
 }
 
 

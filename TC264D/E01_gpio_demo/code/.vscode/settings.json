@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "xf_utils_log_config.h": "c",
+        "elab_def.h": "c",
+        "xf_err.h": "c",
+        "xf_utils_log.h": "c",
+        "vofa_plus.h": "c"
+    }
+}

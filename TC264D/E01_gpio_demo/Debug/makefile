@@ -52,6 +52,7 @@ RM := rm -rf
 -include code/export/subdir.mk
 -include code/component/state_machine/subdir.mk
 -include code/component/ringbuf/subdir.mk
+-include code/3rd/xfusion/xf_utils/subdir.mk
 -include code/3rd/list/subdir.mk
 -include code/3rd/elab/elib/subdir.mk
 -include code/3rd/elab/edf/user/subdir.mk
