@@ -1,12 +1,12 @@
 /**
  * @file serial1_ringbuf_handle.h
  * @author ZC (387646983@qq.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2025-06-02
- * 
+ *
  * @copyright Copyright (c) 2025
- * 
+ *
  */
 
 #ifndef __RINGBUF_HANDLE_H__
@@ -18,17 +18,10 @@
 extern "C" {
 #endif
 
-
-
 void _ringbuf_handler(ringbuf_t *ringbuf);
-
-
 
 #ifdef __cplusplus
 }
 #endif
 
-
 #endif
-
-

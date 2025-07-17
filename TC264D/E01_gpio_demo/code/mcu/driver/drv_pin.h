@@ -7,19 +7,14 @@
 extern "C" {
 #endif
 
-
-typedef struct elab_pin_driver
-{
+typedef struct elab_pin_driver {
     elab_pin_t device;
-    gpio_pin_enum pin_port; //引脚
+    gpio_pin_enum pin_port; // 引脚
 } elab_pin_driver_t;
 
-void elab_driver_pin_init(elab_pin_driver_t *me,const char *name,gpio_pin_enum pin);
+void elab_driver_pin_init(elab_pin_driver_t *me, const char *name, gpio_pin_enum pin);
 #ifdef __cplusplus
 }
 #endif
 
 #endif //__DRIVER_PIN_H__
-
-
-

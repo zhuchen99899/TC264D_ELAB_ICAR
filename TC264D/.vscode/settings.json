@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "elab_motor.h": "c",
+        "elab_log.h": "c",
+        "elab_device.h": "c",
+        "elab_assert.h": "c",
+        "elab_def.h": "c",
+        "cstdlib": "c",
+        "drv_pwm.h": "c"
+    }
+}
