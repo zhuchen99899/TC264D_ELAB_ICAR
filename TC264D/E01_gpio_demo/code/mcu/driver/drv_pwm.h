@@ -26,9 +26,8 @@ extern "C" {
 typedef struct elab_pwm_driver {
     elab_pwm_t device;          // 父类：PWM设备基类
     pwm_channel_enum pwm_pin;   // PWM通道引脚
-    uint32_t current_frequency; // 当前频率
-    uint32_t current_duty;      // 当前占空比
-    bool is_initialized;        // 初始化状态
+    uint32_t frequency; // 当前频率
+    uint32_t duty;      // 当前占空比
 } elab_pwm_driver_t;
 
 /* public functions --------------------------------------------------------- */

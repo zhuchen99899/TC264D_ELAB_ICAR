@@ -11,6 +11,7 @@
         "elab_device.h": "c",
         "cmsis_os.h": "c",
         "elab_assert.h": "c",
-        "cmsis_os2.h": "c"
+        "cmsis_os2.h": "c",
+        "drv_pwm.h": "c"
     }
 }

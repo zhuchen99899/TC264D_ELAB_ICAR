@@ -49,7 +49,6 @@ void elab_pwm_register(elab_pwm_t *const me,
     me->ops        = ops;
     me->frequency  = 1000;  // 默认频率1kHz
     me->duty_cycle = 0;     // 默认占空比0%
-    me->enabled    = false; // 默认禁用
 
     /* Super class data */
     elab_device_t *device = &(me->super);

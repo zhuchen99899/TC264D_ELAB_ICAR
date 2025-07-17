@@ -34,11 +34,9 @@ static void driver_pwm_export(void)
     // 初始化PWM设备
     elab_driver_pwm_init(&pwm1, "pwm1", ATOM0_CH7_P02_7);
 
-    // 开启PWM设备
-    elab_device_open(&pwm1.device.super);
 
     // 设置默认参数
-    elab_pwm_set_frequency(&pwm1.device.super, 1000); // 1kHz频率
+    elab_pwm_set_frequency(&pwm1.device.super, 17000); // 1kHz频率
     elab_pwm_set_duty_cycle(&pwm1.device.super, 0);   // 0%占空比
 }
 
@@ -55,7 +53,7 @@ static void driver_motor_export(void)
     // // 初始化电机控制引脚
     // elab_driver_pin_init(&motor1_pin_in1, "motor1_in1", P20_0);
     // elab_driver_pin_init(&motor1_pin_in2, "motor1_in2", P20_1);
-    elab_driver_pin_init(&motor1_pin_ena, "motor1_ena", P20_2);
+    //elab_driver_pin_init(&motor1_pin_ena, "motor1_ena", P20_2);
 
     // // 初始化电机驱动
     // elab_driver_motor_init(&motor1, "motor1",
