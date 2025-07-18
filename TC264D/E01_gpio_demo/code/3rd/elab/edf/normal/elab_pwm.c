@@ -47,8 +47,8 @@ void elab_pwm_register(elab_pwm_t *const me,
 
     /* PWM class data */
     me->ops        = ops;
-    me->frequency  = 1000;  // 默认频率1kHz
-    me->duty_cycle = 0;     // 默认占空比0%
+    me->frequency  = 1000; // 默认频率1kHz
+    me->duty_cycle = 0;    // 默认占空比0%
 
     /* Super class data */
     elab_device_t *device = &(me->super);
@@ -69,7 +69,7 @@ void elab_pwm_register(elab_pwm_t *const me,
         me->ops->init(me);
     }
 
-    ELAB_LOG_D("PWM device [%s] registered successfully", name);
+    elog_debug("PWM device [%s] registered successfully", name);
 }
 
 /**
@@ -82,7 +82,6 @@ elab_err_t elab_pwm_set_frequency(elab_device_t *const me, uint32_t frequency)
 {
     elab_assert(me != NULL);
     elab_assert(frequency > 0);
-    elab_assert(elab_device_is_enabled(me));
 
     elab_pwm_t *pwm = ELAB_PWM_CAST(me);
     elab_assert(pwm->ops != NULL);
@@ -110,7 +109,6 @@ elab_err_t elab_pwm_get_frequency(elab_device_t *const me, uint32_t *frequency)
 {
     elab_assert(me != NULL);
     elab_assert(frequency != NULL);
-    elab_assert(elab_device_is_enabled(me));
 
     elab_pwm_t *pwm = ELAB_PWM_CAST(me);
     elab_assert(pwm->ops != NULL);
@@ -137,7 +135,6 @@ elab_err_t elab_pwm_set_duty_cycle(elab_device_t *const me, uint32_t duty_cycle)
 {
     elab_assert(me != NULL);
     elab_assert(duty_cycle <= PWM_DUTY_CYCLE_MAX);
-    elab_assert(elab_device_is_enabled(me));
 
     elab_pwm_t *pwm = ELAB_PWM_CAST(me);
     elab_assert(pwm->ops != NULL);
@@ -165,7 +162,6 @@ elab_err_t elab_pwm_get_duty_cycle(elab_device_t *const me, uint32_t *duty_cycle
 {
     elab_assert(me != NULL);
     elab_assert(duty_cycle != NULL);
-    elab_assert(elab_device_is_enabled(me));
 
     elab_pwm_t *pwm = ELAB_PWM_CAST(me);
     elab_assert(pwm->ops != NULL);

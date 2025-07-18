@@ -4,16 +4,20 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../code/3rd/elab/edf/user/elab_led.c 
+../code/3rd/elab/edf/user/elab_led.c \
+../code/3rd/elab/edf/user/elab_motor.c 
 
 OBJS += \
-./code/3rd/elab/edf/user/elab_led.o 
+./code/3rd/elab/edf/user/elab_led.o \
+./code/3rd/elab/edf/user/elab_motor.o 
 
 COMPILED_SRCS += \
-./code/3rd/elab/edf/user/elab_led.src 
+./code/3rd/elab/edf/user/elab_led.src \
+./code/3rd/elab/edf/user/elab_motor.src 
 
 C_DEPS += \
-./code/3rd/elab/edf/user/elab_led.d 
+./code/3rd/elab/edf/user/elab_led.d \
+./code/3rd/elab/edf/user/elab_motor.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

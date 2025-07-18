@@ -31,7 +31,7 @@ typedef enum {
 
 typedef struct elab_motor_s {
     elab_device_t super;
-    int speed;                        // 电机速度
+    float speed;                      // 电机速度
     elab_motor_direction_t direction; // 电机方向
     elab_motor_state_t state;         // 电机状态
     struct elab_motor_ops_s *ops;     // 电机操作函数指针
@@ -40,14 +40,12 @@ typedef struct elab_motor_s {
 
 typedef struct elab_motor_ops_s {
     elab_err_t (*init)(elab_motor_t *const me);
-    elab_err_t (*set_speed)(elab_motor_t *const me, int speed);
-    elab_err_t (*get_speed)(elab_motor_t *const me, int *speed);
+    elab_err_t (*set_speed)(elab_motor_t *const me, float speed);
+    elab_err_t (*get_speed)(elab_motor_t *const me, float *speed);
     elab_err_t (*set_direction)(elab_motor_t *const me, elab_motor_direction_t direction);
     elab_err_t (*elab_motor_emg_stop)(elab_motor_t *const me);
-    elab_err_t (*enable)(elab_motor_t *const me, bool status);
 } elab_motor_ops_t;
 
-elab_err_t elab_motor_enable(elab_device_t *const me, bool status);
 elab_err_t elab_motor_emg_stop(elab_device_t *const me);
 elab_err_t elab_motor_set_speed(elab_device_t *const me, float speed);
 elab_err_t elab_motor_get_speed(elab_device_t *const me, float *speed);

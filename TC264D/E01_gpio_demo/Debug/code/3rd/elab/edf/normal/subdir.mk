@@ -5,18 +5,22 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../code/3rd/elab/edf/normal/elab_pin.c \
+../code/3rd/elab/edf/normal/elab_pwm.c \
 ../code/3rd/elab/edf/normal/elab_serial.c 
 
 OBJS += \
 ./code/3rd/elab/edf/normal/elab_pin.o \
+./code/3rd/elab/edf/normal/elab_pwm.o \
 ./code/3rd/elab/edf/normal/elab_serial.o 
 
 COMPILED_SRCS += \
 ./code/3rd/elab/edf/normal/elab_pin.src \
+./code/3rd/elab/edf/normal/elab_pwm.src \
 ./code/3rd/elab/edf/normal/elab_serial.src 
 
 C_DEPS += \
 ./code/3rd/elab/edf/normal/elab_pin.d \
+./code/3rd/elab/edf/normal/elab_pwm.d \
 ./code/3rd/elab/edf/normal/elab_serial.d 
 
 

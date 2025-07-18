@@ -22,7 +22,6 @@ ELAB_TAG("driver_pwm");
 
 /* private function prototype ----------------------------------------------- */
 static elab_err_t _init(elab_pwm_t *const me);
-static elab_err_t _enable(elab_pwm_t *const me, bool status);
 static elab_err_t _set_frequency(elab_pwm_t *const me, uint32_t frequency);
 static elab_err_t _get_frequency(elab_pwm_t *const me, uint32_t *frequency);
 static elab_err_t _set_duty_cycle(elab_pwm_t *const me, uint32_t duty_cycle);
@@ -44,14 +43,15 @@ static const elab_pwm_ops_t pwm_driver_ops = {
  * @param name PWM设备名称
  * @param pwm_pin PWM通道引脚
  */
-void elab_driver_pwm_init(elab_pwm_driver_t *me, const char *name, pwm_channel_enum pwm_pin)
+void elab_driver_pwm_init(elab_pwm_driver_t *me, const char *name,
+                          pwm_channel_enum pwm_pin, uint32_t frequency, uint32_t duty)
 {
     elab_assert(me != NULL);
     elab_assert(name != NULL);
 
-    me->pwm_pin           = pwm_pin;
-    me->frequency = 1000; // 默认频率1kHz
-    me->duty      = 0;    // 默认占空比0%
+    me->pwm_pin   = pwm_pin;
+    me->frequency = frequency; // 默认频率1kHz
+    me->duty      = duty;      // 默认占空比0%
 
     elab_pwm_register(&me->device, name, &pwm_driver_ops, me);
 
@@ -71,14 +71,11 @@ static elab_err_t _init(elab_pwm_t *const me)
     elog_debug("Initializing PWM hardware for pin %d", driver->pwm_pin);
 
     // 初始化PWM - 默认频率1kHz，占空比0%
-    pwm_init(driver->pwm_pin, driver->frequency, 0);
-
+    pwm_init(driver->pwm_pin, driver->frequency, driver->duty);
 
     elog_debug("PWM hardware initialized successfully");
     return ELAB_OK;
 }
-
-
 
 /**
  * @brief 设置PWM频率
@@ -91,7 +88,6 @@ static elab_err_t _set_frequency(elab_pwm_t *const me, uint32_t frequency)
     elab_assert(me != NULL);
     elab_pwm_driver_t *driver = (elab_pwm_driver_t *)me->super.user_data;
 
-
     if (frequency == 0) {
         elog_error("Invalid frequency: %d", frequency);
         return ELAB_ERR_INVALID;
@@ -103,7 +99,7 @@ static elab_err_t _set_frequency(elab_pwm_t *const me, uint32_t frequency)
     pwm_init(driver->pwm_pin, frequency, driver->duty);
 
     driver->frequency = frequency;
-    me->frequency = frequency;
+    me->frequency     = frequency;
 
     return ELAB_OK;
 }
@@ -119,7 +115,7 @@ static elab_err_t _get_frequency(elab_pwm_t *const me, uint32_t *frequency)
     elab_assert(me != NULL);
     elab_assert(frequency != NULL);
     elab_pwm_driver_t *driver = (elab_pwm_driver_t *)me->super.user_data;
-    *frequency = driver->frequency;
+    *frequency                = driver->frequency;
 
     elog_debug("Current PWM frequency: %d Hz", *frequency);
 
@@ -171,7 +167,7 @@ static elab_err_t _get_duty_cycle(elab_pwm_t *const me, uint32_t *duty_cycle)
     // 将zf库的占空比范围转换回elab的范围
     *duty_cycle = (uint32_t)((uint64_t)driver->duty * PWM_DUTY_CYCLE_MAX / PWM_DUTY_MAX);
 
-    ELAB_LOG_D("Current PWM duty cycle: %d/%d (%.1f%%)",
+    elog_debug("Current PWM duty cycle: %d/%d (%.1f%%)",
                *duty_cycle, PWM_DUTY_CYCLE_MAX,
                (float)*duty_cycle * 100.0f / PWM_DUTY_CYCLE_MAX);
 

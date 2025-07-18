@@ -24,10 +24,10 @@ extern "C" {
 
 /* public typedef ----------------------------------------------------------- */
 typedef struct elab_pwm_driver {
-    elab_pwm_t device;          // 父类：PWM设备基类
-    pwm_channel_enum pwm_pin;   // PWM通道引脚
-    uint32_t frequency; // 当前频率
-    uint32_t duty;      // 当前占空比
+    elab_pwm_t device;        // 父类：PWM设备基类
+    pwm_channel_enum pwm_pin; // PWM通道引脚
+    uint32_t frequency;       // 当前频率
+    uint32_t duty;            // 当前占空比
 } elab_pwm_driver_t;
 
 /* public functions --------------------------------------------------------- */
@@ -37,7 +37,8 @@ typedef struct elab_pwm_driver {
  * @param name PWM设备名称
  * @param pwm_pin PWM通道引脚
  */
-void elab_driver_pwm_init(elab_pwm_driver_t *me, const char *name, pwm_channel_enum pwm_pin);
+void elab_driver_pwm_init(elab_pwm_driver_t *me, const char *name, pwm_channel_enum pwm_pin,
+                          uint32_t frequency, uint32_t duty);
 
 #ifdef __cplusplus
 }

@@ -12,6 +12,8 @@
 #include "elab_motor.h"
 #include "../../common/elab_assert.h"
 #include "../../common/elab_log.h"
+
+ELAB_TAG("EdfMotor");
 /**
  * @brief 初始化电机对象
  * @param me 电机对象指针
@@ -22,8 +24,8 @@
 void elab_motor_init(elab_motor_t *const me, const char *name,
                      elab_motor_ops_t *ops, void *user_data)
 {
-    ELAB_ASSERT(me != NULL);
-    ELAB_ASSERT(ops != NULL);
+    elab_assert(me != NULL);
+    elab_assert(ops != NULL);
 
     /* 初始化电机属性 */
     me->speed     = 0;
@@ -48,44 +50,13 @@ void elab_motor_init(elab_motor_t *const me, const char *name,
 }
 
 /**
- * @brief 使能/禁用电机
- * @param me 设备对象指针
- * @param status 使能状态
- * @return 错误码
- */
-elab_err_t elab_motor_enable(elab_device_t *const me, bool status)
-{
-    ELAB_ASSERT(me != NULL);
-
-    elab_motor_t *motor = ELAB_MOTOR_CAST(me);
-
-    if (motor->ops->enable == NULL) {
-        return ELAB_ERR_EMPTY;
-    }
-
-    elab_err_t ret = motor->ops->enable(motor, status);
-
-    if (ret == ELAB_OK) {
-        if (status) {
-            motor->state = ELAB_MOTOR_STATE_IDLE;
-        } else {
-            motor->state     = ELAB_MOTOR_STATE_IDLE;
-            motor->speed     = 0;
-            motor->direction = ELAB_MOTOR_DIRECTION_STOP;
-        }
-    }
-
-    return ret;
-}
-
-/**
  * @brief 紧急停止电机
  * @param me 设备对象指针
  * @return 错误码
  */
 elab_err_t elab_motor_emg_stop(elab_device_t *const me)
 {
-    ELAB_ASSERT(me != NULL);
+    elab_assert(me != NULL);
 
     elab_motor_t *motor = ELAB_MOTOR_CAST(me);
 
@@ -112,7 +83,7 @@ elab_err_t elab_motor_emg_stop(elab_device_t *const me)
  */
 elab_err_t elab_motor_set_speed(elab_device_t *const me, float speed)
 {
-    ELAB_ASSERT(me != NULL);
+    elab_assert(me != NULL);
 
     elab_motor_t *motor = ELAB_MOTOR_CAST(me);
 
@@ -145,8 +116,8 @@ elab_err_t elab_motor_set_speed(elab_device_t *const me, float speed)
  */
 elab_err_t elab_motor_get_speed(elab_device_t *const me, float *speed)
 {
-    ELAB_ASSERT(me != NULL);
-    ELAB_ASSERT(speed != NULL);
+    elab_assert(me != NULL);
+    elab_assert(speed != NULL);
 
     elab_motor_t *motor = ELAB_MOTOR_CAST(me);
 
@@ -175,7 +146,7 @@ elab_err_t elab_motor_get_speed(elab_device_t *const me, float *speed)
  */
 elab_err_t elab_motor_set_direction(elab_device_t *const me, elab_motor_direction_t direction)
 {
-    ELAB_ASSERT(me != NULL);
+    elab_assert(me != NULL);
 
     elab_motor_t *motor = ELAB_MOTOR_CAST(me);
 

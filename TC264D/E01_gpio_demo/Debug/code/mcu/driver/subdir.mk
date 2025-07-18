@@ -4,19 +4,27 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../code/mcu/driver/drv_motor.c \
 ../code/mcu/driver/drv_pin.c \
+../code/mcu/driver/drv_pwm.c \
 ../code/mcu/driver/drv_uart.c 
 
 OBJS += \
+./code/mcu/driver/drv_motor.o \
 ./code/mcu/driver/drv_pin.o \
+./code/mcu/driver/drv_pwm.o \
 ./code/mcu/driver/drv_uart.o 
 
 COMPILED_SRCS += \
+./code/mcu/driver/drv_motor.src \
 ./code/mcu/driver/drv_pin.src \
+./code/mcu/driver/drv_pwm.src \
 ./code/mcu/driver/drv_uart.src 
 
 C_DEPS += \
+./code/mcu/driver/drv_motor.d \
 ./code/mcu/driver/drv_pin.d \
+./code/mcu/driver/drv_pwm.d \
 ./code/mcu/driver/drv_uart.d 
 
 

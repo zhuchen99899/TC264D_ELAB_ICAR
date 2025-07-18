@@ -3,7 +3,7 @@
  * @author GitHub Copilot
  * @brief 电机驱动层头文件
  * @version 0.1
- * @date 2025-07-17
+ * @date 2025-07-18
  *
  * @copyright Copyright (c) 2025
  *
@@ -14,26 +14,31 @@
 
 #include "../../3rd/elab/edf/user/elab_motor.h"
 #include "drv_pin.h"
+#include "drv_pwm.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/* public typedef ----------------------------------------------------------- */
 /**
  * @brief 电机驱动结构体
  */
 typedef struct elab_motor_driver {
-    elab_motor_t device;        // 电机设备对象
+    elab_motor_t device;        // 电机设备对象（父类）
     elab_pin_driver_t *pin_in1; // 方向控制引脚1
     elab_pin_driver_t *pin_in2; // 方向控制引脚2
-    elab_pin_driver_t *pin_ena; // 使能引脚（PWM控制）
-    uint32_t max_speed;         // 最大速度
-    uint32_t min_speed;         // 最小速度
+    elab_pin_driver_t *pin_ena; // 使能引脚（数字信号）
+    elab_pwm_driver_t *pwm_ena; // 使能PWM（速度控制，可选）
+    uint32_t max_speed;         // 最大速度（0-100）
+    uint32_t min_speed;         // 最小速度（0-100）
     bool is_enabled;            // 使能状态
+    bool use_pwm;               // 是否使用PWM控制速度
 } elab_motor_driver_t;
 
+/* public functions --------------------------------------------------------- */
 /**
- * @brief 初始化电机驱动
+ * @brief 初始化电机驱动（数字控制版本）
  * @param me 电机驱动对象指针
  * @param name 电机设备名称
  * @param pin_in1 方向控制引脚1
@@ -46,8 +51,24 @@ void elab_driver_motor_init(elab_motor_driver_t *me,
                             elab_pin_driver_t *pin_in2,
                             elab_pin_driver_t *pin_ena);
 
+/**
+ * @brief 初始化电机驱动（PWM控制版本）
+ * @param me 电机驱动对象指针
+ * @param name 电机设备名称
+ * @param pin_in1 方向控制引脚1
+ * @param pin_in2 方向控制引脚2
+ * @param pwm_ena PWM使能通道（速度控制）
+ */
+void elab_driver_motor_init_pwm(elab_motor_driver_t *me,
+                                const char *name,
+                                elab_pin_driver_t *pin_in1,
+                                elab_pin_driver_t *pin_in2,
+                                elab_pwm_driver_t *pwm_ena);
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif //__DRIVER_MOTOR_H__
+
+/* ----------------------------- end of file -------------------------------- */

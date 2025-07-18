@@ -26,6 +26,20 @@ drv_export.o :	../code/component/ringbuf/ringbuf.h
 ../code/component/ringbuf/ringbuf.h :
 drv_export.o :	../code/3rd/elab/common/elab_def.h
 ../code/3rd/elab/common/elab_def.h :
+drv_export.o :	../code/mcu/driver/drv_motor.h
+../code/mcu/driver/drv_motor.h :
+drv_export.o :	../code/3rd/elab/edf/user/elab_motor.h
+../code/3rd/elab/edf/user/elab_motor.h :
+drv_export.o :	../code/mcu/driver/drv_pin.h
+../code/mcu/driver/drv_pin.h :
+drv_export.o :	../code/mcu/driver/drv_pwm.h
+../code/mcu/driver/drv_pwm.h :
+drv_export.o :	../code/3rd/elab/edf/normal/elab_pwm.h
+../code/3rd/elab/edf/normal/elab_pwm.h :
+drv_export.o :	../code/3rd/elab/common/elab_assert.h
+../code/3rd/elab/common/elab_assert.h :
+drv_export.o :	../code/3rd/elab/common/elab_log.h
+../code/3rd/elab/common/elab_log.h :
 drv_export.o :	../code/3rd/elab/common/elab_export.h
 ../code/3rd/elab/common/elab_export.h :
 drv_export.o :	../code/3rd/elab/common/elab_def.h
