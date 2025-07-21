@@ -26,43 +26,30 @@ static void dirver_uart_export(void)
 
 INIT_EXPORT(dirver_uart_export, EXPORT_DRVIVER);
 
-/* PWM driver export -------------------------------------------------------- */
+/* Motor driver export -------------------------------------------------------- */
 static elab_pwm_driver_t pwm1;
-
-static void driver_pwm_export(void)
+static elab_pin_driver_t motor1_pin_in1;
+static elab_pin_driver_t motor1_pin_in2;
+static elab_motor_driver_t motor1;
+static void driver_motor_export(void)
 {
     // 初始化PWM设备
     elab_driver_pwm_init(&pwm1, "pwm1", ATOM0_CH7_P02_7, 17000, 0);
+    elab_driver_pin_init(&motor1_pin_in1, "motor1_in1", P21_2);
+    elab_driver_pin_init(&motor1_pin_in2, "motor1_in2", P21_3);
 
-    elab_pwm_set_duty_cycle(&pwm1.device, 7000); // 设置占空比为50%
-}
 
-INIT_EXPORT(driver_pwm_export, EXPORT_DRVIVER);
-
-/* Motor driver export ------------------------------------------------------ */
-static elab_pin_driver_t motor1_pin_in1;
-static elab_pin_driver_t motor1_pin_in2;
-static elab_pin_driver_t motor1_pin_ena;
-static elab_motor_driver_t motor1;
-
-static void driver_motor_export(void)
-{
-    // // 初始化电机控制引脚
-    // elab_driver_pin_init(&motor1_pin_in1, "motor1_in1", P20_0);
-    // elab_driver_pin_init(&motor1_pin_in2, "motor1_in2", P20_1);
-    // elab_driver_pin_init(&motor1_pin_ena, "motor1_ena", P20_2);
-
-    // // 初始化电机驱动
-    // elab_driver_motor_init(&motor1, "motor1",
-    //                        &motor1_pin_in1,
-    //                        &motor1_pin_in2,
-    //                        &motor1_pin_ena);
-
-    // // 使能电机
-    // elab_motor_enable(&motor1.device.super, true);
+    elab_driver_motor_init(&motor1, "motor1",
+                           &motor1_pin_in1, &motor1_pin_in2, &pwm1);
+    elab_motor_set_direction(&motor1.device.super, ELAB_MOTOR_DIRECTION_FORWARD);
+    elab_motor_set_speed(&motor1.device.super, 50); // 设置速度为50%
+    //elab_pwm_set_duty_cycle(&pwm1.device, 5000); // 设置占空比为50%
 }
 
 INIT_EXPORT(driver_motor_export, EXPORT_DRVIVER);
+
+/* Motor driver export ------------------------------------------------------ */
+
 
 /**uart1 接收中断 */
 uint8_t get_data;

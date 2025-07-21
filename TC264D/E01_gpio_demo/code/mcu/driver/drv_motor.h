@@ -20,6 +20,17 @@
 extern "C" {
 #endif
 
+
+
+typedef struct pid_s{
+    float kp; // 比例系数
+    float ki; // 积分系数
+    float kd; // 微分系数
+    float setpoint; // 目标值
+    float integral; // 积分值
+    float last_error; // 上一次误差
+}pid_t;
+
 /* public typedef ----------------------------------------------------------- */
 /**
  * @brief 电机驱动结构体
@@ -28,17 +39,15 @@ typedef struct elab_motor_driver {
     elab_motor_t device;        // 电机设备对象（父类）
     elab_pin_driver_t *pin_in1; // 方向控制引脚1
     elab_pin_driver_t *pin_in2; // 方向控制引脚2
-    elab_pin_driver_t *pin_ena; // 使能引脚（数字信号）
-    elab_pwm_driver_t *pwm_ena; // 使能PWM（速度控制，可选）
-    uint32_t max_speed;         // 最大速度（0-100）
-    uint32_t min_speed;         // 最小速度（0-100）
-    bool is_enabled;            // 使能状态
-    bool use_pwm;               // 是否使用PWM控制速度
+    elab_pwm_driver_t *pin_ena; // 使能PWM（速度控制，可选）
+    float max_speed;         // 最大速度（0-100）
+    float min_speed;         // 最小速度（0-100）
+    pid_t pid; // PID控制参数
 } elab_motor_driver_t;
 
 /* public functions --------------------------------------------------------- */
 /**
- * @brief 初始化电机驱动（数字控制版本）
+ * @brief 初始化电机驱动
  * @param me 电机驱动对象指针
  * @param name 电机设备名称
  * @param pin_in1 方向控制引脚1
@@ -49,21 +58,7 @@ void elab_driver_motor_init(elab_motor_driver_t *me,
                             const char *name,
                             elab_pin_driver_t *pin_in1,
                             elab_pin_driver_t *pin_in2,
-                            elab_pin_driver_t *pin_ena);
-
-/**
- * @brief 初始化电机驱动（PWM控制版本）
- * @param me 电机驱动对象指针
- * @param name 电机设备名称
- * @param pin_in1 方向控制引脚1
- * @param pin_in2 方向控制引脚2
- * @param pwm_ena PWM使能通道（速度控制）
- */
-void elab_driver_motor_init_pwm(elab_motor_driver_t *me,
-                                const char *name,
-                                elab_pin_driver_t *pin_in1,
-                                elab_pin_driver_t *pin_in2,
-                                elab_pwm_driver_t *pwm_ena);
+                            elab_pwm_driver_t *pin_ena);
 
 #ifdef __cplusplus
 }

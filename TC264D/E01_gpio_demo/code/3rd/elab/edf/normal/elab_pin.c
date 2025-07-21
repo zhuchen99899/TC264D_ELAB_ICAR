@@ -61,10 +61,12 @@ void elab_pin_register(elab_pin_t * const me,
   * @note pin模式设置
   */
 void elab_pin_set_mode(elab_device_t * const me, uint8_t mode)
-{
+{   
     assert(me != NULL);
 
     elab_pin_t *pin = (elab_pin_t *)me;
+ 
+
     if (pin->mode != mode)
     {
         pin->ops->set_mode(pin, mode); //调用底层接口

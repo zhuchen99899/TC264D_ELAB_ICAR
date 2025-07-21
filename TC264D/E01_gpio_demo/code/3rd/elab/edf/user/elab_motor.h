@@ -21,19 +21,11 @@ typedef enum {
     ELAB_MOTOR_DIRECTION_BACKWARD, // 反转
 } elab_motor_direction_t;
 
-/* 电机状态枚举 */
-typedef enum {
-    ELAB_MOTOR_STATE_IDLE = 0,       // 空闲
-    ELAB_MOTOR_STATE_RUNNING,        // 运行中
-    ELAB_MOTOR_STATE_ERROR,          // 错误状态
-    ELAB_MOTOR_STATE_EMERGENCY_STOP, // 紧急停止
-} elab_motor_state_t;
 
 typedef struct elab_motor_s {
     elab_device_t super;
     float speed;                      // 电机速度
     elab_motor_direction_t direction; // 电机方向
-    elab_motor_state_t state;         // 电机状态
     struct elab_motor_ops_s *ops;     // 电机操作函数指针
 } elab_motor_t;
 #define ELAB_MOTOR_CAST(_dev) ((elab_motor_t *)_dev)

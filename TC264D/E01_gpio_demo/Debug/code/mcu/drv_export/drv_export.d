@@ -40,6 +40,8 @@ drv_export.o :	../code/3rd/elab/common/elab_assert.h
 ../code/3rd/elab/common/elab_assert.h :
 drv_export.o :	../code/3rd/elab/common/elab_log.h
 ../code/3rd/elab/common/elab_log.h :
+drv_export.o :	../code/mcu/driver/drv_pwm.h
+../code/mcu/driver/drv_pwm.h :
 drv_export.o :	../code/3rd/elab/common/elab_export.h
 ../code/3rd/elab/common/elab_export.h :
 drv_export.o :	../code/3rd/elab/common/elab_def.h

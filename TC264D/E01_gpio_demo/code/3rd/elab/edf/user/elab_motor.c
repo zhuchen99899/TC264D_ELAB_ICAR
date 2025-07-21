@@ -30,7 +30,6 @@ void elab_motor_init(elab_motor_t *const me, const char *name,
     /* 初始化电机属性 */
     me->speed     = 0;
     me->direction = ELAB_MOTOR_DIRECTION_STOP;
-    me->state     = ELAB_MOTOR_STATE_IDLE;
     me->ops       = ops;
 
     /* 初始化设备基类 */
@@ -42,6 +41,9 @@ void elab_motor_init(elab_motor_t *const me, const char *name,
             .type = ELAB_DEVICE_UNKNOWN,
         };
     elab_device_register(&me->super, &attr_motor);
+        //驱动数据注册到设备层
+    me->super.user_data = user_data;
+    me->super.ops = NULL;
 
     /* 调用硬件初始化 */
     if (me->ops->init != NULL) {
@@ -67,7 +69,6 @@ elab_err_t elab_motor_emg_stop(elab_device_t *const me)
     elab_err_t ret = motor->ops->elab_motor_emg_stop(motor);
 
     if (ret == ELAB_OK) {
-        motor->state     = ELAB_MOTOR_STATE_EMERGENCY_STOP;
         motor->speed     = 0;
         motor->direction = ELAB_MOTOR_DIRECTION_STOP;
     }
@@ -87,22 +88,17 @@ elab_err_t elab_motor_set_speed(elab_device_t *const me, float speed)
 
     elab_motor_t *motor = ELAB_MOTOR_CAST(me);
 
-    if (motor->state == ELAB_MOTOR_STATE_EMERGENCY_STOP) {
-        return ELAB_ERROR;
-    }
 
     if (motor->ops->set_speed == NULL) {
         return ELAB_ERR_EMPTY;
     }
 
-    /* 将浮点速度转换为整型 */
-    int int_speed = (int)speed;
 
-    elab_err_t ret = motor->ops->set_speed(motor, int_speed);
+    elab_err_t ret = motor->ops->set_speed(motor, speed);
 
     if (ret == ELAB_OK) {
-        motor->speed = int_speed;
-        motor->state = (int_speed == 0) ? ELAB_MOTOR_STATE_IDLE : ELAB_MOTOR_STATE_RUNNING;
+        motor->speed = speed;
+    
     }
 
     return ret;
@@ -127,12 +123,12 @@ elab_err_t elab_motor_get_speed(elab_device_t *const me, float *speed)
         return ELAB_OK;
     }
 
-    int int_speed;
-    elab_err_t ret = motor->ops->get_speed(motor, &int_speed);
+    float get_speed;
+    elab_err_t ret = motor->ops->get_speed(motor, &get_speed);
 
     if (ret == ELAB_OK) {
-        *speed       = (float)int_speed;
-        motor->speed = int_speed;
+        *speed       = (float)get_speed;
+        motor->speed = get_speed;
     }
 
     return ret;
@@ -150,9 +146,6 @@ elab_err_t elab_motor_set_direction(elab_device_t *const me, elab_motor_directio
 
     elab_motor_t *motor = ELAB_MOTOR_CAST(me);
 
-    if (motor->state == ELAB_MOTOR_STATE_EMERGENCY_STOP) {
-        return ELAB_ERROR;
-    }
 
     if (motor->ops->set_direction == NULL) {
         return ELAB_ERR_EMPTY;
@@ -162,10 +155,7 @@ elab_err_t elab_motor_set_direction(elab_device_t *const me, elab_motor_directio
 
     if (ret == ELAB_OK) {
         motor->direction = direction;
-        if (direction == ELAB_MOTOR_DIRECTION_STOP) {
-            motor->state = ELAB_MOTOR_STATE_IDLE;
-            motor->speed = 0;
-        }
+        elog_debug("Motor direction set to: %d", direction);
     }
 
     return ret;
