@@ -34,22 +34,22 @@ static elab_motor_driver_t motor1;
 static void driver_motor_export(void)
 {
     // 初始化PWM设备
-    elab_driver_pwm_init(&pwm1, "pwm1", ATOM0_CH7_P02_7, 17000, 0);
+    elab_driver_pwm_init(&pwm1, "pwm1", ATOM0_CH4_P02_4, 17000, 0);
     elab_driver_pin_init(&motor1_pin_in1, "motor1_in1", P21_2);
     elab_driver_pin_init(&motor1_pin_in2, "motor1_in2", P21_3);
-
+    elab_pin_set_mode(&motor1_pin_in1.device.super, PIN_MODE_OUTPUT_PP);
+    elab_pin_set_mode(&motor1_pin_in2.device.super, PIN_MODE_OUTPUT_PP);
 
     elab_driver_motor_init(&motor1, "motor1",
                            &motor1_pin_in1, &motor1_pin_in2, &pwm1);
     elab_motor_set_direction(&motor1.device.super, ELAB_MOTOR_DIRECTION_FORWARD);
-    elab_motor_set_speed(&motor1.device.super, 50); // 设置速度为50%
-    //elab_pwm_set_duty_cycle(&pwm1.device, 5000); // 设置占空比为50%
+    elab_motor_set_speed(&motor1.device.super, 35); // 设置速度为55%
+    // elab_pwm_set_duty_cycle(&pwm1.device, 5000); // 设置占空比为50%
 }
 
 INIT_EXPORT(driver_motor_export, EXPORT_DRVIVER);
 
 /* Motor driver export ------------------------------------------------------ */
-
 
 /**uart1 接收中断 */
 uint8_t get_data;

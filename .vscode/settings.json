@@ -1,0 +1,21 @@
+{
+    "files.associations": {
+        "elab_assert.h": "c",
+        "serial1_ringbuf_handle.h": "c",
+        "state_machine.h": "c",
+        "elab_serial.h": "c",
+        "elab_export.h": "c",
+        "cstdlib": "c",
+        "compare": "c",
+        "elab_common.h": "c",
+        "stdio.h": "c",
+        "elab_def.h": "c",
+        "assert.h": "c",
+        "handle_cmd.h": "c",
+        "drv_pwm.h": "c",
+        "elab_log.h": "c",
+        "elab_motor.h": "c",
+        "string.h": "c",
+        "elab_pin.h": "c"
+    }
+}

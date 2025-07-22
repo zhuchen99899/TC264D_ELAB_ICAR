@@ -57,19 +57,15 @@ void elab_driver_motor_init(elab_motor_driver_t *me,
     elab_assert(pin_in2 != NULL);
     elab_assert(pin_ena != NULL);
 
-
     // 初始化电机驱动参数
-    me->pin_in1    = pin_in1;
-    me->pin_in2    = pin_in2;
-    me->pin_ena    = pin_ena; 
-    me->max_speed  = 100;  // 默认最大速度
-    me->min_speed  = 0;    // 默认最小速度
-
+    me->pin_in1   = pin_in1;
+    me->pin_in2   = pin_in2;
+    me->pin_ena   = pin_ena;
+    me->max_speed = 100; // 默认最大速度
+    me->min_speed = 0;   // 默认最小速度
 
     // 注册电机组件到elab框架
     elab_motor_init(&me->device, name, (elab_motor_ops_t *)&motor_driver_ops, me);
-
-
 
     elog_info("Motor driver [%s] initialized successfully", name);
 }
@@ -85,7 +81,6 @@ static elab_err_t _init(elab_motor_t *const me)
 
     elab_assert(me != NULL);
 
-
     elab_motor_driver_t *driver = (elab_motor_driver_t *)me->super.user_data;
 
     elog_debug("Initializing motor hardware...");
@@ -94,14 +89,12 @@ static elab_err_t _init(elab_motor_t *const me)
     elab_pin_set_mode(&driver->pin_in1->device.super, PIN_MODE_OUTPUT_PP);
     elab_pin_set_mode(&driver->pin_in2->device.super, PIN_MODE_OUTPUT_PP);
 
-
     elab_pwm_set_frequency(&driver->pin_ena->device.super, 17000); // 17kHz PWM频率
-    elab_pwm_set_duty_cycle(&driver->pin_ena->device.super, 0);   // 初始占空比为0
+    elab_pwm_set_duty_cycle(&driver->pin_ena->device.super, 0);    // 初始占空比为0
 
     // 初始状态：停止
-    elab_pin_set_status(&driver->pin_in1->device.super, false); //0
-    elab_pin_set_status(&driver->pin_in2->device.super, false); //0
-
+    elab_pin_set_status(&driver->pin_in1->device.super, false); // 0
+    elab_pin_set_status(&driver->pin_in2->device.super, false); // 0
 
     elog_debug("Motor hardware initialized");
     return ELAB_OK;
@@ -122,19 +115,18 @@ static elab_err_t _set_speed(elab_motor_t *const me, float speed)
     if (speed > driver->max_speed) speed = driver->max_speed;
     if (speed < driver->min_speed) speed = driver->min_speed;
 
-    elog_debug("Setting motor speed to: %d", speed);
+    elog_debug("Setting motor speed to: %f", speed);
 
+    // PWM模式：设置占空比
+    if (speed > 0) {
+        // 将速度（0-100）转换为PWM占空比（0-10000）
+        uint32_t duty_cycle = (uint32_t)((speed * 10000) / 100);
+        elab_pwm_set_duty_cycle(&driver->pin_ena->device.super, duty_cycle);
+        elog_debug("Motor PWM duty cycle set to: %d (%.1f%%)", duty_cycle, (float)speed);
+    } else {
+        elab_pwm_set_duty_cycle(&driver->pin_ena->device.super, 0);
+    }
 
-        // PWM模式：设置占空比
-        if (speed > 0) {
-            // 将速度（0-100）转换为PWM占空比（0-10000）
-            uint32_t duty_cycle = (uint32_t)((speed * 10000) / 100);
-            elab_pwm_set_duty_cycle(&driver->pin_ena->device.super, duty_cycle);
-            elog_debug("Motor PWM duty cycle set to: %d (%.1f%%)", duty_cycle, (float)speed);
-        } else {
-            elab_pwm_set_duty_cycle(&driver->pin_ena->device.super, 0);
-        }
-    
     return ELAB_OK;
 }
 
@@ -165,7 +157,6 @@ static elab_err_t _set_direction(elab_motor_t *const me, elab_motor_direction_t 
 {
     elab_assert(me != NULL);
     elab_motor_driver_t *driver = (elab_motor_driver_t *)me->super.user_data;
-
 
     elog_debug("Setting motor direction: %d", direction);
 
